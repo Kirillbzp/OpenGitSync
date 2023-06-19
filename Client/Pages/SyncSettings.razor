@@ -1,0 +1,48 @@
+﻿@page "/sync-settings"
+@layout MainLayout
+
+<h3>Sync Settings</h3>
+
+@if (syncSettings == null)
+{
+    <p>Loading sync settings...</p>
+}
+else
+{
+    @if (syncSettings.Count == 0)
+    {
+        <p>No sync settings found.</p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Sync Name</th>
+                    <th>Frequency</th>
+                    <th>Last Synced</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var syncSetting in syncSettings)
+                {
+                    <tr>
+                        <td>@syncSetting.Name</td>
+                        <td>@syncSetting.Frequency</td>
+                        <td>@syncSetting.LastSynced</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}
+
+@code {
+    private List<SyncSettingDto> syncSettings;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Call the sync settings service or API to retrieve the list of sync settings
+        // Example: syncSettings = await syncSettingsService.GetSyncSettingsAsync();
+    }
+}

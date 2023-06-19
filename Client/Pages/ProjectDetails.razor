@@ -1,0 +1,31 @@
+﻿@page "/project-details/{projectId:int}"
+@layout MainLayout
+
+<h3>Project Details</h3>
+
+@if (project == null)
+{
+    <p>Loading project details...</p>
+}
+else
+{
+    <div>
+        <h4>@project.Name</h4>
+        <p>@project.Description</p>
+        <p>Repository 1 URL: @project.Repository1Url</p>
+        <p>Repository 2 URL: @project.Repository2Url</p>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int ProjectId { get; set; }
+
+    private ProjectDto project;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Call the project service or API to retrieve the project details based on the ProjectId
+        // Example: project = await projectService.GetProjectByIdAsync(ProjectId);
+    }
+}

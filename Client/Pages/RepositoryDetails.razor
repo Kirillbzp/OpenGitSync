@@ -1,0 +1,30 @@
+﻿@page "/repository-details/{repositoryId:int}"
+@using OpenGitSync.Shared.DataTransferObjects;
+@layout MainLayout
+
+<h3>Repository Details</h3>
+
+@if (repository == null)
+{
+    <p>Loading repository details...</p>
+}
+else
+{
+    <div>
+        <h4>@repository.Name</h4>
+        <p>URL: @repository.Url</p>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int RepositoryId { get; set; }
+
+    private RepositoryDto repository;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Call the repository service or API to retrieve the repository details based on the RepositoryId
+        // Example: repository = await repositoryService.GetRepositoryByIdAsync(RepositoryId);
+    }
+}
