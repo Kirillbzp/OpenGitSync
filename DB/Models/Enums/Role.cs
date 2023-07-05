@@ -1,10 +1,8 @@
 ﻿namespace DB.Models.Enums
 {
-    public enum ProjectPermissions
+    public enum Role
     {
-        Owner,
         Administrator,
-        View
+        User
     }
-
 }

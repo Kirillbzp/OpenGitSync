@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DB.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace DB.Models
 {
@@ -17,6 +18,11 @@ namespace DB.Models
         [Required]
         [EmailAddress]
         public string Email { get; set; }
+
+        public Role Role { get; set; }
+
+        public DateTime RegistrationDate { get; set; }
+
         public List<UserProject> UserProjects { get; set; }
     }
 

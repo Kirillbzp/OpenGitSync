@@ -15,7 +15,7 @@ namespace DB.Models
         public long ProjectId { get; set; }
         [ForeignKey("ProjectId")]
         public Project Project { get; set; }
-        public ProjectPermissions Role { get; set; }
+        public ProjectPermission Role { get; set; }
         
     }
 

@@ -7,7 +7,7 @@ namespace OpenGitSync.Shared.DataTransferObjects
         public long Id { get; set; }
         public long UserId { get; set; }
         public long ProjectId { get; set; }
-        public ProjectPermissions Role { get; set; }
+        public ProjectPermission Role { get; set; }
     }
 
 }

@@ -34,7 +34,9 @@ namespace OpenGitSync.Server.Services
             var user = new User
             {
                 UserName = registrationDto.UserName,
-                Email = registrationDto.Email
+                Email = registrationDto.Email,
+                RegistrationDate = DateTime.UtcNow,
+                Role = DB.Models.Enums.Role.User
             };
 
             var result = await _userManager.CreateAsync(user, registrationDto.Password);

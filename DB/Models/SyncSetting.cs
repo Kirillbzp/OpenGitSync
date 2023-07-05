@@ -23,6 +23,9 @@ namespace DB.Models
         [DataType(DataType.Time)]
         public TimeSpan StartTime { get; set; }
 
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+
         #endregion
 
         #region Relationships

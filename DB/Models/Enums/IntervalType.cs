@@ -1,6 +1,6 @@
 ﻿namespace DB.Models.Enums
 {
-    public enum IntervalTypes
+    public enum IntervalType
     {
         Once,
         Daily,

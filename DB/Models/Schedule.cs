@@ -10,7 +10,7 @@ namespace DB.Models
 
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
-        public IntervalTypes IntervalType { get; set; }
+        public IntervalType IntervalType { get; set; }
         public long IntervalCount { get; set; }
         public bool OnSunday { get; set; }
         public bool OnMonday { get; set; }

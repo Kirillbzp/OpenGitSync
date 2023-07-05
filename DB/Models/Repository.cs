@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DB.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DB.Models
@@ -12,6 +13,7 @@ namespace DB.Models
         [Required]
         public string Url { get; set; }
         public string Key { get; set; }
+        public RepositoryType RepositoryType { get; set; }
 
         // Relationships
         public long ProjectId { get; set; }
