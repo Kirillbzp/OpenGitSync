@@ -1,4 +1,4 @@
-﻿namespace OpenGitSync.Server.Models
+﻿namespace OpenGitSync.Shared.ViewModels
 {
     public class LoginResult
     {

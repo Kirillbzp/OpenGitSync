@@ -23,12 +23,12 @@ namespace OpenGitSync.Server.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetRepositoryById(long id)
+        public IActionResult GetRepository(long id)
         {
             var repository = _repositoryService.GetRepositoryById(id);
 
             if (repository == null)
-                return NotFound();
+                return NotFound(new { Error = "Repository not found" });
 
             return Ok(repository);
         }
@@ -37,7 +37,7 @@ namespace OpenGitSync.Server.Controllers
         public IActionResult CreateRepository(RepositoryDto repositoryDto)
         {
             var createdRepository = _repositoryService.CreateRepository(repositoryDto);
-            return CreatedAtAction(nameof(GetRepositoryById), new { id = createdRepository.Id }, createdRepository);
+            return CreatedAtAction(nameof(GetRepository), new { id = createdRepository.Id }, createdRepository);
         }
 
         [HttpPut("{id}")]
@@ -46,7 +46,7 @@ namespace OpenGitSync.Server.Controllers
             var updatedRepository = _repositoryService.UpdateRepository(id, repositoryDto);
 
             if (updatedRepository == null)
-                return NotFound();
+                return NotFound(new { Error = "Repository not found" });
 
             return Ok(updatedRepository);
         }
@@ -57,11 +57,9 @@ namespace OpenGitSync.Server.Controllers
             var deletedRepository = _repositoryService.DeleteRepository(id);
 
             if (deletedRepository == null)
-                return NotFound();
+                return NotFound(new { Error = "Repository not found" });
 
             return Ok(deletedRepository);
         }
     }
-
-
 }

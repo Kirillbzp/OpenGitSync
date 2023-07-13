@@ -12,17 +12,20 @@ namespace OpenGitSync.Server.Services
         ProjectDto CreateProject(ProjectDto projectDto);
         ProjectDto UpdateProject(long id, ProjectDto projectDto);
         ProjectDto DeleteProject(long id);
+        IEnumerable<SyncSettingDto> GetProjectSyncSettings(long projectId);
     }
 
     public class ProjectService : IProjectService
     {
         private readonly IProjectRepository _projectRepository;
         private readonly IMapper _mapper;
+        private readonly ISyncSettingRepository _syncSettingRepository;
 
-        public ProjectService(IProjectRepository projectRepository, IMapper mapper)
+        public ProjectService(IProjectRepository projectRepository, IMapper mapper, ISyncSettingRepository syncSettingRepository)
         {
             _projectRepository = projectRepository;
             _mapper = mapper;
+            _syncSettingRepository = syncSettingRepository;
         }
 
         public IEnumerable<ProjectDto> GetProjects()
@@ -91,6 +94,18 @@ namespace OpenGitSync.Server.Services
             };
         }
 
+        public IEnumerable<SyncSettingDto> GetProjectSyncSettings(long projectId)
+        {
+            var syncSettings = _syncSettingRepository.GetSyncSettingsByProjectId(projectId);
+            var syncSettingDtos = syncSettings.Select(syncSetting => new SyncSettingDto
+            {
+                // Map properties of SyncSetting entity to SyncSettingDto
+                Id = syncSetting.Id,
+                // Map other properties as needed
+            }).ToList();
+
+            return syncSettingDtos;
+        }
     }
 
 }

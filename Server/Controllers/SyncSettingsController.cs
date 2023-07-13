@@ -3,7 +3,8 @@ using DB.Models;
 using Microsoft.AspNetCore.Mvc;
 using OpenGitSync.Server.Services;
 using OpenGitSync.Shared.DataTransferObjects;
-using System.Runtime.CompilerServices;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace OpenGitSync.Server.Controllers
 {
@@ -25,26 +26,26 @@ namespace OpenGitSync.Server.Controllers
         {
             var syncSetting = _syncSettingService.GetSyncSettingById(id);
             if (syncSetting == null)
-                return NotFound();
+                return NotFound(new { Error = "Sync setting not found" });
 
-            return Ok(syncSetting);
+            var syncSettingDto = _mapper.Map<SyncSettingDto>(syncSetting);
+            return Ok(syncSettingDto);
         }
 
         [HttpGet("project/{projectId}")]
         public ActionResult<IEnumerable<SyncSettingDto>> GetSyncSettingsByProjectId(long projectId)
         {
             var syncSettings = _syncSettingService.GetSyncSettingsByProjectId(projectId);
-            return Ok(syncSettings);
+            var syncSettingDtos = _mapper.Map<IEnumerable<SyncSettingDto>>(syncSettings);
+            return Ok(syncSettingDtos);
         }
 
         [HttpPost]
         public ActionResult<SyncSettingDto> CreateSyncSetting(SyncSettingCreateDto createDto)
         {
             var syncSetting = _mapper.Map<SyncSetting>(createDto);
-
             _syncSettingService.CreateSyncSetting(syncSetting);
-
-            var syncSettingDto =  _mapper.Map<SyncSettingDto>(syncSetting);
+            var syncSettingDto = _mapper.Map<SyncSettingDto>(syncSetting);
             return CreatedAtAction(nameof(GetSyncSettingById), new { id = syncSetting.Id }, syncSettingDto);
         }
 
@@ -53,10 +54,9 @@ namespace OpenGitSync.Server.Controllers
         {
             var syncSetting = _syncSettingService.GetSyncSettingById(id);
             if (syncSetting == null)
-                return NotFound();
+                return NotFound(new { Error = "Sync setting not found" });
 
-            MapUpdateDtoToSyncSetting(updateDto, syncSetting);
-
+            _mapper.Map(updateDto, syncSetting);
             _syncSettingService.UpdateSyncSetting(syncSetting);
 
             return NoContent();
@@ -67,21 +67,11 @@ namespace OpenGitSync.Server.Controllers
         {
             var syncSetting = _syncSettingService.GetSyncSettingById(id);
             if (syncSetting == null)
-                return NotFound();
+                return NotFound(new { Error = "Sync setting not found" });
 
             _syncSettingService.DeleteSyncSetting(syncSetting);
 
             return NoContent();
         }
-
-        private void MapUpdateDtoToSyncSetting(SyncSettingUpdateDto updateDto, SyncSetting syncSetting)
-        {
-            // Implement the mapping from SyncSettingUpdateDto to existing SyncSetting entity
-            // Here's an example:
-            syncSetting.SourceRepositoryId = updateDto.SourceRepositoryId;
-            syncSetting.TargetRepositoryId = updateDto.TargetRepositoryId;
-            syncSetting.Schedule = _mapper.Map<Schedule>(updateDto.Schedule);
-        }
     }
-
 }

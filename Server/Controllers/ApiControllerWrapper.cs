@@ -7,14 +7,13 @@ namespace OpenGitSync.Server.Controllers
     public interface IApiControllerWrapper
     {
         long UserId(ClaimsPrincipal user);
-        
     }
+
     public class ApiControllerWrapper : IApiControllerWrapper
     {
         public const long NoUserId = 0;
-        
+
         private readonly IRequestHelper requestHelper;
-        
 
         public ApiControllerWrapper(IRequestHelper requestHelper)
         {
@@ -25,6 +24,5 @@ namespace OpenGitSync.Server.Controllers
         {
             return requestHelper.GetClaimValue(user, ClaimTypes.Sid, NoUserId, long.TryParse);
         }
-
     }
 }
