@@ -1,0 +1,49 @@
+﻿@page "/notifications"
+@using OpenGitSync.Client.Services;
+@using OpenGitSync.Shared.DataTransferObjects;
+@inject INotificationService notificationService
+
+<h3>Notifications</h3>
+
+@if (notifications == null)
+{
+    <p>Loading notifications...</p>
+}
+else if (notifications.Count() == 0)
+{
+    <p>No notifications found.</p>
+}
+else
+{
+    foreach (var notification in notifications)
+    {
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">@notification.Title</h5>
+                <p class="card-text">@notification.Message</p>
+                <p class="card-text">
+                    <small class="text-muted">Received on: @notification.ReceivedAt.ToString()</small>
+                </p>
+                @if (!notification.IsRead)
+                {
+                    <button class="btn btn-primary" @onclick="(() => MarkNotificationAsRead(notification.Id))">Mark as Read</button>
+                }
+            </div>
+        </div>
+    }
+}
+
+@code {
+    IEnumerable<NotificationDto> notifications = new List<NotificationDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        notifications = await notificationService.GetNotifications();
+    }
+
+    private async Task MarkNotificationAsRead(long notificationId)
+    {
+        await notificationService.MarkNotificationAsRead(notificationId);
+        notifications = await notificationService.GetNotifications();
+    }
+}

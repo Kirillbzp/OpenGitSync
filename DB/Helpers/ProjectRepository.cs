@@ -10,6 +10,7 @@ namespace DB.Helpers
         Project CreateProject(Project project);
         Project UpdateProject(Project project);
         Project DeleteProject(Project project);
+        IEnumerable<Project> GetProjectsByUserId(long userId);
     }
 
     public class ProjectRepository : IProjectRepository
@@ -33,6 +34,7 @@ namespace DB.Helpers
 
         public Project CreateProject(Project project)
         {
+            project.CreatedAt = DateTime.Now;
             _dbContext.Projects.Add(project);
             _dbContext.SaveChanges();
             return project;
@@ -40,6 +42,7 @@ namespace DB.Helpers
 
         public Project UpdateProject(Project project)
         {
+            project.UpdatedAt = DateTime.Now;
             _dbContext.Entry(project).State = EntityState.Modified;
             _dbContext.SaveChanges();
             return project;
@@ -50,6 +53,11 @@ namespace DB.Helpers
             _dbContext.Projects.Remove(project);
             _dbContext.SaveChanges();
             return project;
+        }
+
+        public IEnumerable<Project> GetProjectsByUserId(long userId)
+        {
+            return _dbContext.UserProjects.Where(u => u.UserId == userId).Include(p => p.Project).Select(p => p.Project).ToList();
         }
     }
 

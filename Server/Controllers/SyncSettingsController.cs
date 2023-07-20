@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DB.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenGitSync.Server.Services;
 using OpenGitSync.Shared.DataTransferObjects;
@@ -10,6 +11,7 @@ namespace OpenGitSync.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class SyncSettingsController : ApiControllerBase
     {
         private readonly ISyncSettingService _syncSettingService;

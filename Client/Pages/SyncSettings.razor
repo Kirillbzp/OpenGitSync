@@ -1,0 +1,46 @@
+﻿@page "/syncsettings"
+@using OpenGitSync.Client.Services;
+@using OpenGitSync.Shared.DataTransferObjects;
+@inject ISyncSettingsService SyncSettingsService
+
+<h3>Sync Settings</h3>
+
+@if (SyncSettingList != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Sync Start Type</th>
+                <th>Schedule</th>
+                <th>Sync Way</th>
+                <th>Start Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var syncSetting in SyncSettingList)
+            {
+                <tr>
+                    <td>@syncSetting.Name</td>
+                    <td>@syncSetting.SyncStartType</td>
+                    <td>@syncSetting.Schedule</td>
+                    <td>@syncSetting.SyncWay</td>
+                    <td>@syncSetting.StartTime</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No sync settings found.</p>
+}
+
+@code {
+    List<SyncSettingDto> SyncSettingList { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        SyncSettingList = await SyncSettingsService.GetSyncSettings();
+    }
+}

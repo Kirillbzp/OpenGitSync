@@ -1,0 +1,52 @@
+﻿@page "/projects"
+@using OpenGitSync.Shared.DataTransferObjects;
+@inject HttpClient HttpClient
+
+<PageTitle>Projects</PageTitle>
+
+<h3>Projects</h3>
+
+@if (ProjectsList == null)
+{
+    <p>Loading projects...</p>
+}
+else if (ProjectsList.Count == 0)
+{
+    <p>No projects found.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Project Name</th>
+                <th>Description</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var project in ProjectsList)
+            {
+                <tr>
+                    <td>@project.Name</td>
+                    <td>@project.Description</td>
+                    <td><a href="/edit-project/@project.Id">Edit</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<ProjectDto> ProjectsList { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProjects();
+    }
+
+    private async Task LoadProjects()
+    {
+        ProjectsList = await HttpClient.GetFromJsonAsync<List<ProjectDto>>("/api/projects");
+    }
+}

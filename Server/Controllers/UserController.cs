@@ -1,4 +1,5 @@
 ﻿using DB.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OpenGitSync.Server.Services;
@@ -19,7 +20,27 @@ namespace OpenGitSync.Server.Controllers
             _userManager = userManager;
         }
 
+        [HttpGet("profile")]
+        public IActionResult GetUserProfile()
+        {
+            // Retrieve the user from the service
+            var user = _userService.GetUserById(UserId);
+
+            if (user == null)
+                return NotFound(new { Error = "User not found" });
+
+            // Map the user to the UserProfileDto
+            var userProfile = new UserProfileDto
+            {
+                UserName = user.UserName,
+                Email = user.Email
+            };
+
+            return Ok(userProfile);
+        }
+
         [HttpPost("register")]
+        [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] UserRegistrationDto registrationDto)
         {
             if (!ModelState.IsValid)
@@ -38,6 +59,7 @@ namespace OpenGitSync.Server.Controllers
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] UserLoginDto loginDto)
         {
             if (!ModelState.IsValid)
@@ -49,10 +71,10 @@ namespace OpenGitSync.Server.Controllers
 
             if (result.Succeeded)
             {
-                return Ok(new { Token = result.Token });
+                return Ok(result);
             }
 
-            return BadRequest(new { Error = "Invalid login credentials" });
+            return BadRequest(result);
         }
 
         [HttpPut("profile")]
