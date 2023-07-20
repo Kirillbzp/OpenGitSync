@@ -9,8 +9,8 @@ namespace OpenGitSync.Shared.DataTransferObjects
         public bool IsEnabled { get; set; }
         public string Name { get; set; }
 
-        SyncStartTypes SyncStartType { get; set; }
-        public long ScheduleId { get; set; }
+        public SyncStartTypes SyncStartType { get; set; }
+        public ScheduleDto Schedule { get; set; }
         public SyncWays SyncWay { get; set; }
         [DataType(DataType.Time)]
         public TimeSpan StartTime { get; set; }

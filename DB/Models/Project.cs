@@ -18,6 +18,8 @@ namespace DB.Models
         public List<Repository> Repositories { get; set; }
         public List<UserProject> UserProjects { get; set; }
         public List<SyncSetting> SyncSettings{ get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
     }
 
 }

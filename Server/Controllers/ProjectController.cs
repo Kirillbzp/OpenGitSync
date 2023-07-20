@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using OpenGitSync.Server.Services;
 using OpenGitSync.Shared.DataTransferObjects;
 
@@ -6,6 +7,7 @@ namespace OpenGitSync.Server.Controllers
 {
     [ApiController]
     [Route("api/projects")]
+    [Authorize]
     public class ProjectController : ApiControllerBase
     {
         private readonly IProjectService _projectService;

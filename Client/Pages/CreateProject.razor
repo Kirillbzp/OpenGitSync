@@ -1,0 +1,72 @@
+﻿@page "/create-project"
+@using OpenGitSync.Shared.DataTransferObjects;
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create Project</PageTitle>
+
+<h3>Create Project</h3>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger">@ErrorMessage</div>
+}
+
+<div class="card mt-4">
+    <div class="card-body">
+        <h5 class="card-title">Project Information</h5>
+
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" class="form-control" placeholder="Enter project name" @bind="ProjectName" />
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" class="form-control" placeholder="Enter project description" @bind="ProjectDescription"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary" @onclick="HandleCreateProject">Create Project</button>
+    </div>
+</div>
+
+@code {
+    private string ProjectName { get; set; }
+    private string ProjectDescription { get; set; }
+    private string ErrorMessage { get; set; }
+
+    private async Task HandleCreateProject()
+    {
+        // Validate the form inputs
+        if (string.IsNullOrWhiteSpace(ProjectName))
+        {
+            ErrorMessage = "Project name is required";
+            return;
+        }
+
+        // Create a ProjectDto object with the form data
+        var projectDto = new ProjectDto
+            {
+                Name = ProjectName,
+                Description = ProjectDescription
+            };
+
+        // Make an API request to create the project
+        var response = await HttpClient.PostAsJsonAsync("/api/projects", projectDto);
+
+        if (response.IsSuccessStatusCode)
+        {
+            // Project creation successful, redirect to the project details page or perform other actions
+            var createdProject = await response.Content.ReadFromJsonAsync<ProjectDto>();
+            if (createdProject != null)
+            {
+                NavigationManager.NavigateTo($"/project/{createdProject.Id}");
+            }
+        }
+        else
+        {
+            // Handle the project creation error, display an error message, or perform other actions
+            ErrorMessage = "Failed to create project";
+        }
+    }
+}

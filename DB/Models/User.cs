@@ -1,9 +1,10 @@
 ﻿using DB.Models.Enums;
+using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 
 namespace DB.Models
 {
-    public class User
+    public class User : IdentityUser<long>
     {
         [Key]
         public long Id { get; set; }

@@ -1,0 +1,84 @@
+﻿@page "/login"
+@using Blazored.LocalStorage;
+@using OpenGitSync.Shared.DataTransferObjects
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@using OpenGitSync.Shared.ViewModels
+@inject ILocalStorageService localStorage
+
+<h3>Login</h3>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger">@ErrorMessage</div>
+}
+
+<form @onsubmit="HandleSubmit">
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input id="email" class="form-control" type="email" @bind="loginDto.Email" />
+    </div>
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <input id="password" class="form-control" type="password" @bind="loginDto.Password" />
+    </div>
+    <button type="submit" class="btn btn-primary">Login</button>
+</form>
+
+@code {
+    private UserLoginDto loginDto = new UserLoginDto();
+    private string ErrorMessage = "";
+
+    private async Task HandleSubmit()
+    {
+        if (!string.IsNullOrEmpty(loginDto.Email) && !string.IsNullOrEmpty(loginDto.Password))
+        {
+            // Create a new UserLoginDto using the login credentials
+            var userLoginDto = new UserLoginDto
+                {
+                    Email = loginDto.Email,
+                    Password = loginDto.Password
+                };
+
+            // Send a POST request to the login endpoint of your API
+            var response = await HttpClient.PostAsJsonAsync("api/users/login", userLoginDto);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // User login successful
+                var result = await response.Content.ReadFromJsonAsync<LoginResult>();
+
+                // Check if the login was successful
+                if (result != null && result.Succeeded)
+                {
+                    await localStorage.SetItemAsync("token", result.Token);
+
+                    // Redirect to the dashboard or another page
+                    NavigationManager.NavigateTo("/dashboard");
+                }
+                else
+                {
+                    // Display the error message from the API response
+                    if (result == null)
+                    {
+                        ErrorMessage = "General error";
+                    }
+                    else
+                    {
+                        ErrorMessage = result.ErrorMessage;
+                    }
+                }
+            }
+            else
+            {
+                // User login failed, display a generic error message
+                ErrorMessage = "Invalid email or password.";
+            }
+        }
+        else
+        {
+            // Display an error message if the form is not valid
+            ErrorMessage = "Please enter both email and password.";
+        }
+    }
+}

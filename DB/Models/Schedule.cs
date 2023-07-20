@@ -5,7 +5,7 @@ namespace DB.Models
 {
     public class Schedule
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string Name { get; set; }
 
         public TimeSpan StartTime { get; set; }
@@ -21,10 +21,6 @@ namespace DB.Models
         public bool OnSaturday { get; set; }
         public long MinimumDeleay { get; set; }
         public long RepeatTaskInterval { get; set; }
-
-        public long SyncSettingId { get; set; }
-        [ForeignKey("SyncSettingId")]
-        public SyncSetting SyncSetting { get; set; }
 
     }
 }
