@@ -1,0 +1,76 @@
+﻿@page "/register"
+@using OpenGitSync.Shared.DataTransferObjects;
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+<PageTitle>Register</PageTitle>
+
+<div class="container">
+    <h3 class="mt-5">Register</h3>
+
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5 class="card-title">Create an Account</h5>
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" class="form-control" placeholder="Enter your username" @bind="Username" />
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" class="form-control" placeholder="Enter your email" @bind="Email" />
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" class="form-control" placeholder="Enter your password" @bind="Password" />
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm your password" @bind="ConfirmPassword" />
+            </div>
+
+            <button type="submit" class="btn btn-primary" @onclick="RegisterUser">Register</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string Username { get; set; }
+    private string Email { get; set; }
+    private string Password { get; set; }
+    private string ConfirmPassword { get; set; }
+
+    private async Task RegisterUser()
+    {
+        // Validate the form inputs
+        if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
+        {
+            // Display an error message or handle validation as needed
+            return;
+        }
+
+        // Create a UserRegistrationDto object with the form data
+        var registrationDto = new UserRegistrationDto
+            {
+                UserName = Username,
+                Email = Email,
+                Password = Password
+            };
+
+        // Make an API request to register the user
+        var response = await HttpClient.PostAsJsonAsync("/api/users/register", registrationDto);
+
+        if (response.IsSuccessStatusCode)
+        {
+            // Registration successful, redirect to the login page or perform other actions
+            NavigationManager.NavigateTo("/login");
+        }
+        else
+        {
+            // Handle the registration error, display an error message, or perform other actions
+        }
+    }
+}

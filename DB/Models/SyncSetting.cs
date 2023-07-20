@@ -42,7 +42,7 @@ namespace DB.Models
         public Repository SourceRepository { get; set; }
 
         public long TargetRepositoryId { get; set; }
-        [ForeignKey("TargetRepository")]
+        [ForeignKey("TargetRepositoryId")]
         public Repository TargetRepository { get; set; }
         
         #endregion

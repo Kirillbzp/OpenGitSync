@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using OpenGitSync.Shared.DataTransferObjects;
 using OpenGitSync.Shared.ViewModels;
-using Org.BouncyCastle.Crypto.Generators;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -140,7 +139,7 @@ namespace OpenGitSync.Server.Services
 
             // Compare the provided password with the stored password
             // Return true if they match, false otherwise
-            return user.Password == HashPassword(password);
+            return user.PasswordHash == HashPassword(password);
         }
 
         public string HashPassword(string password)

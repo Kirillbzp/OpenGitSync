@@ -1,0 +1,55 @@
+﻿@page "/profile"
+@using OpenGitSync.Shared.DataTransferObjects;
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+<PageTitle>Settings</PageTitle>
+
+<h3>User Settings</h3>
+
+@if (User == null)
+{
+    <p>Loading user profile...</p>
+}
+else
+{
+    <form>
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" class="form-control" id="name" @bind="@User.UserName" />
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" id="email" @bind="@User.Email" />
+        </div>
+        <button type="button" class="btn btn-primary" @onclick="SaveSettings">Save</button>
+    </form>
+}
+
+@code {
+    private UserProfileDto User { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUserProfile();
+    }
+
+    private async Task LoadUserProfile()
+    {
+        User = await HttpClient.GetFromJsonAsync<UserProfileDto>("/api/users/profile");
+    }
+
+    private async Task SaveSettings()
+    {
+        var response = await HttpClient.PutAsJsonAsync("/api/users/profile", User);
+
+        if (response.IsSuccessStatusCode)
+        {
+            NavigationManager.NavigateTo("/settings", forceLoad: true);
+        }
+        else
+        {
+            // Handle error
+        }
+    }
+}
