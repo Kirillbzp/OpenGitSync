@@ -1,6 +1,8 @@
 ﻿@page "/dashboard"
 @using OpenGitSync.Client.Services;
 @using OpenGitSync.Shared.DataTransferObjects;
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize]
 @inject IProjectService ProjectService
 
 <h3>Dashboard</h3>

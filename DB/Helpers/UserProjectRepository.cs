@@ -6,7 +6,7 @@ namespace DB.Helpers
     {
         UserProject GetUserProjectById(long id);
         IEnumerable<UserProject> GetUserProjectsByProjectId(long projectId);
-        IEnumerable<UserProject> GetUserProjectsByUserId(long userId);
+        IEnumerable<UserProject> GetUserProjectsByUserId(string userId);
         void AddUserProject(UserProject userProject);
         void UpdateUserProject(UserProject userProject);
         void DeleteUserProject(UserProject userProject);
@@ -31,7 +31,7 @@ namespace DB.Helpers
             return _dbContext.UserProjects.Where(up => up.ProjectId == projectId).ToList();
         }
 
-        public IEnumerable<UserProject> GetUserProjectsByUserId(long userId)
+        public IEnumerable<UserProject> GetUserProjectsByUserId(string userId)
         {
             return _dbContext.UserProjects.Where(up => up.UserId == userId).ToList();
         }

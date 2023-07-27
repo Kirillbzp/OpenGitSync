@@ -41,21 +41,6 @@ namespace OpenGitSync.Server.Services
             _userProjectRepository.DeleteUserProject(userProject);
         }
 
-        private UserProjectDto MapUserProjectToDto(UserProject userProject)
-        {
-            // Implement the mapping from UserProject entity to UserProjectDto
-            // You can use a library like AutoMapper or manually map the properties
-            // Here's an example using manual mapping:
-            var userProjectDto = new UserProjectDto
-            {
-                Id = userProject.Id,
-                UserId = userProject.UserId,
-                ProjectId = userProject.ProjectId,
-                Role = userProject.Role
-            };
-
-            return userProjectDto;
-        }
     }
 
 }

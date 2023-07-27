@@ -1,10 +1,10 @@
-﻿using DB.Models.Enums;
+﻿using OpenGitSync.Shared.Enums;
 
 namespace OpenGitSync.Shared.DataTransferObjects
 {
     public class UserDto
     {
-        public long Id { get; set; }
+        public string Id { get; set; }
         public string UserName { get; set; }
         public string Email { get; set; }
         public DateTime RegistrationDate { get; set; }

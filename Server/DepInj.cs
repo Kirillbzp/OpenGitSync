@@ -2,8 +2,11 @@
 using DB;
 using DB.Helpers;
 using DB.Models;
+using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using OpenGitSync.Server.Controllers;
+using OpenGitSync.Server.Helpers;
 using OpenGitSync.Server.Services;
 
 
@@ -26,6 +29,9 @@ namespace OpenGitSync.Server
                 return mappingConfig.CreateMapper();
             });
 
+            services.AddScoped<IApiControllerWrapper, ApiControllerWrapper>();
+            services.AddScoped<IRequestHelper, RequestHelper>();
+            
             //services.AddSingleton(provider =>
             //{
             //    var mappingConfig = new MapperConfiguration(mc =>

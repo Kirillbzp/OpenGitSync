@@ -1,14 +1,17 @@
 ﻿using DB.Models;
+using Duende.IdentityServer.EntityFramework.Options;
+using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using OpenGitSync.Server.Models;
 
 namespace DB
 {
-    public class AppDbContext : IdentityDbContext<User, CustomRole, long>
+    public class AppDbContext : ApiAuthorizationDbContext<User>//IdentityDbContext<User, CustomRole, long>
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options)
-        : base(options)
+        public AppDbContext(DbContextOptions<AppDbContext> options, IOptions<OperationalStoreOptions> operationalStoreOptions)
+        : base(options, operationalStoreOptions)
         {
         }
 

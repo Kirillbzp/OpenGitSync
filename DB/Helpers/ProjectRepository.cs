@@ -10,7 +10,7 @@ namespace DB.Helpers
         Project CreateProject(Project project);
         Project UpdateProject(Project project);
         Project DeleteProject(Project project);
-        IEnumerable<Project> GetProjectsByUserId(long userId);
+        IEnumerable<Project> GetProjectsByUserId(string userId);
     }
 
     public class ProjectRepository : IProjectRepository
@@ -55,7 +55,7 @@ namespace DB.Helpers
             return project;
         }
 
-        public IEnumerable<Project> GetProjectsByUserId(long userId)
+        public IEnumerable<Project> GetProjectsByUserId(string userId)
         {
             return _dbContext.UserProjects.Where(u => u.UserId == userId).Include(p => p.Project).Select(p => p.Project).ToList();
         }

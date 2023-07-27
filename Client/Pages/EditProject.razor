@@ -1,5 +1,7 @@
 ﻿@page "/edit-project/{projectId}"
 @using OpenGitSync.Shared.DataTransferObjects;
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize]
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 

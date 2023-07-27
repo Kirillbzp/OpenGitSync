@@ -1,5 +1,4 @@
-﻿// IProjectService.cs
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using OpenGitSync.Shared.DataTransferObjects;
@@ -27,7 +26,7 @@ namespace OpenGitSync.Client.Services
     public class ProjectService : IProjectService
     {
         private readonly HttpClient _httpClient;
-
+        
         public ProjectService(HttpClient httpClient)
         {
             _httpClient = httpClient;

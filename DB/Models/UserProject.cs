@@ -8,7 +8,7 @@ namespace DB.Models
     {
         [Key]
         public long Id { get; set; }
-        public long UserId { get; set; }
+        public string UserId { get; set; }
         [ForeignKey("UserId")]
         public User User { get; set; }
 

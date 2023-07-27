@@ -1,6 +1,4 @@
-﻿using DB.Models;
-
-namespace OpenGitSync.Shared.DataTransferObjects
+﻿namespace OpenGitSync.Shared.DataTransferObjects
 {
     public class SyncSettingUpdateDto
     {

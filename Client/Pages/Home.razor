@@ -1,4 +1,6 @@
-﻿@page "/home"
+﻿@page "/"
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize]
 @inherits LayoutComponentBase
 
 <div class="container">

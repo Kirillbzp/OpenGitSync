@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using OpenGitSync.Server.Helpers;
 using OpenGitSync.Server.Services;
 using OpenGitSync.Shared.DataTransferObjects;
 
@@ -52,10 +53,10 @@ namespace OpenGitSync.Server.Controllers
 
             if (result.Succeeded)
             {
-                return Ok();
+                return Ok(new ResponceResultDto());
             }
 
-            return BadRequest(new { Errors = result.Errors });
+            return BadRequest(result.ToError());
         }
 
         [HttpPost("login")]
@@ -80,11 +81,8 @@ namespace OpenGitSync.Server.Controllers
         [HttpPut("profile")]
         public IActionResult UpdateProfile(UserProfileDto profileDto)
         {
-            // Get the current user ID
-            long userId = UserId;
-
             // Retrieve the user from the database
-            var user = _userService.GetUserById(userId);
+            var user = _userService.GetUserById(UserId);
 
             if (user == null)
                 return NotFound(new { Error = "User not found" });
@@ -103,11 +101,8 @@ namespace OpenGitSync.Server.Controllers
         [HttpPut("change-password")]
         public async Task<IActionResult> ChangePassword(ChangePasswordDto passwordDto)
         {
-            // Get the current user ID
-            long userId = UserId;
-
             // Retrieve the user from the database
-            var user = await _userManager.FindByIdAsync(userId.ToString());
+            var user = await _userManager.FindByIdAsync(UserId);
 
             if (user == null)
                 return NotFound(new { Error = "User not found" });
@@ -126,7 +121,7 @@ namespace OpenGitSync.Server.Controllers
         }
 
         [HttpGet("{userId}/projects")]
-        public IActionResult GetUserProjects(long userId)
+        public IActionResult GetUserProjects(string userId)
         {
             // Retrieve the user projects from the service
             var projects = _userService.GetUserProjects(userId);
