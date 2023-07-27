@@ -1,19 +1,44 @@
 ﻿@page "/login"
 @using Blazored.LocalStorage;
+@using OpenGitSync.Client.Services;
+@using OpenGitSync.Client.Shared;
 @using OpenGitSync.Shared.DataTransferObjects
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 @using OpenGitSync.Shared.ViewModels
 @inject ILocalStorageService localStorage
+@layout EmptyLayout
+@inject IAuthService AuthService
 
-<h3>Login</h3>
+<div class="container">
+    
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <Alert Color="AlertColor.Danger"> <Icon Name="IconName.ExclamationTriangleFill" class="me-2"></Icon>@ErrorMessage</Alert>
+    }
 
-@if (!string.IsNullOrEmpty(ErrorMessage))
-{
-    <div class="alert alert-danger">@ErrorMessage</div>
-}
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5 class="card-title">Login</h5>
+            <form @onsubmit="HandleSubmit">
+                <div class="form-group row mb-3">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" class="form-control" placeholder="Enter your email" @bind="loginDto.Email" />
+                </div>
 
-<form @onsubmit="HandleSubmit">
+                <div class="form-group row mb-3">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="Enter your password" @bind="loginDto.Password" />
+                </div>
+
+                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Login</Button>
+                <Button Color="ButtonColor.Primary" @onclick="GoToRegistration">Register</Button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@*<form @onsubmit="HandleSubmit">
     <div class="form-group">
         <label for="email">Email:</label>
         <input id="email" class="form-control" type="email" @bind="loginDto.Email" />
@@ -23,7 +48,9 @@
         <input id="password" class="form-control" type="password" @bind="loginDto.Password" />
     </div>
     <button type="submit" class="btn btn-primary">Login</button>
-</form>
+</form>*@
+
+@*<button class="btn btn-primary" @onclick="GoToRegistration">Register</button>*@
 
 @code {
     private UserLoginDto loginDto = new UserLoginDto();
@@ -33,52 +60,28 @@
     {
         if (!string.IsNullOrEmpty(loginDto.Email) && !string.IsNullOrEmpty(loginDto.Password))
         {
-            // Create a new UserLoginDto using the login credentials
-            var userLoginDto = new UserLoginDto
-                {
-                    Email = loginDto.Email,
-                    Password = loginDto.Password
-                };
 
-            // Send a POST request to the login endpoint of your API
-            var response = await HttpClient.PostAsJsonAsync("api/users/login", userLoginDto);
+            var result = await AuthService.AuthenticateAsync(loginDto.Email, loginDto.Password);
 
-            if (response.IsSuccessStatusCode)
+            if (string.IsNullOrEmpty(result))
             {
-                // User login successful
-                var result = await response.Content.ReadFromJsonAsync<LoginResult>();
-
-                // Check if the login was successful
-                if (result != null && result.Succeeded)
-                {
-                    await localStorage.SetItemAsync("token", result.Token);
-
-                    // Redirect to the dashboard or another page
-                    NavigationManager.NavigateTo("/dashboard");
-                }
-                else
-                {
-                    // Display the error message from the API response
-                    if (result == null)
-                    {
-                        ErrorMessage = "General error";
-                    }
-                    else
-                    {
-                        ErrorMessage = result.ErrorMessage;
-                    }
-                }
+                NavigationManager.NavigateTo("/dashboard");
             }
             else
             {
-                // User login failed, display a generic error message
-                ErrorMessage = "Invalid email or password.";
+                ErrorMessage = result;
             }
+            
         }
         else
         {
             // Display an error message if the form is not valid
             ErrorMessage = "Please enter both email and password.";
         }
+    }
+
+    private void GoToRegistration()
+    {
+        NavigationManager.NavigateTo("/register");
     }
 }

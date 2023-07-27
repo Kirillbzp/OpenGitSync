@@ -14,11 +14,11 @@ namespace OpenGitSync.Server.Services
     {
         Task<IdentityResult> RegisterUserAsync(UserRegistrationDto registrationDto);
         Task<LoginResult> LoginAsync(UserLoginDto loginDto);
-        UserDto GetUserById(long userId);
+        UserDto GetUserById(string userId);
         void UpdateUser(UserDto userDto);
         bool ValidateUserPassword(UserDto userDto, string password);
         string HashPassword(string password);
-        IEnumerable<ProjectDto> GetUserProjects(long userId);
+        IEnumerable<ProjectDto> GetUserProjects(string userId);
     }
 
     public class UserService : IUserService
@@ -98,7 +98,7 @@ namespace OpenGitSync.Server.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public UserDto GetUserById(long userId)
+        public UserDto GetUserById(string userId)
         {
             var user = _userRepository.GetUserById(userId);
             if (user == null)
@@ -150,7 +150,7 @@ namespace OpenGitSync.Server.Services
             return hashedPassword;
         }
 
-        public IEnumerable<ProjectDto> GetUserProjects(long userId)
+        public IEnumerable<ProjectDto> GetUserProjects(string userId)
         {
             var projects = _projectRepository.GetProjectsByUserId(userId);
             if (projects == null)

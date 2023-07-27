@@ -4,7 +4,7 @@ namespace DB.Helpers
 {
     public interface INotificationRepository
     {
-        IEnumerable<Notification> GetNotificationsByUserId(long userId);
+        IEnumerable<Notification> GetNotificationsByUserId(string userId);
         Notification GetNotificationById(long notificationId);
         void UpdateNotification(Notification notification);
         // Other methods as needed: CreateNotification, DeleteNotification, etc.
@@ -19,7 +19,7 @@ namespace DB.Helpers
             _dbContext = dbContext;
         }
 
-        public IEnumerable<Notification> GetNotificationsByUserId(long userId)
+        public IEnumerable<Notification> GetNotificationsByUserId(string userId)
         {
             return _dbContext.Notifications.Where(n => n.UserId == userId);
         }

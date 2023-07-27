@@ -1,4 +1,4 @@
-﻿using DB.Models.Enums;
+﻿using OpenGitSync.Shared.Enums;
 
 namespace OpenGitSync.Shared.DataTransferObjects
 {

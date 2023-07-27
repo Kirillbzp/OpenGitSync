@@ -4,7 +4,7 @@ namespace DB.Helpers
 {
     public interface IUserRepository
     {
-        User GetUserById(long id);
+        User GetUserById(string id);
         User GetUserByEmail(string email);
         void AddUser(User user);
         void UpdateUser(User user);
@@ -20,7 +20,7 @@ namespace DB.Helpers
             _dbContext = dbContext;
         }
 
-        public User GetUserById(long id)
+        public User GetUserById(string id)
         {
             return _dbContext.Users.Find(id);
         }

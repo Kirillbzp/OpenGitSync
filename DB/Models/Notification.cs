@@ -1,4 +1,5 @@
 ﻿using DB.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OpenGitSync.Server.Models
 {
@@ -9,7 +10,8 @@ namespace OpenGitSync.Server.Models
         public string Message { get; set; }
         public bool IsRead { get; set; }
         public DateTime ReceivedAt { get; set; }
-        public long UserId { get; set; }
+        public string UserId { get; set; }
+        [ForeignKey("UserId")]
         public User User { get; set; }
     }
 }

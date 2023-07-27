@@ -1,6 +1,8 @@
 ﻿@page "/syncsettings"
 @using OpenGitSync.Client.Services;
 @using OpenGitSync.Shared.DataTransferObjects;
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize]
 @inject ISyncSettingsService SyncSettingsService
 
 <h3>Sync Settings</h3>

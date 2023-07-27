@@ -11,6 +11,6 @@ namespace OpenGitSync.Server.Controllers
             this.wrapper = wrapper;
         }
 
-        protected long UserId => wrapper.UserId(User);
+        protected string UserId => wrapper.UserId(User);
     }
 }

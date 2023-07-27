@@ -12,6 +12,7 @@ namespace OpenGitSync.Server.Helpers
         string GetMacAddress(HttpContext context);
 
         T GetClaimValue<T>(ClaimsPrincipal user, string claimId, T defaultValue, RequestHelper.Parser<T> parser);
+        string GetStringClaimValue(ClaimsPrincipal user, string claimId, string defaultValue);
         T GetHeaderValue<T>(HttpRequest request, string header, T defaultValue, RequestHelper.Parser<T> parser);
     }
 
@@ -28,6 +29,14 @@ namespace OpenGitSync.Server.Helpers
             var claim = user.FindFirst(claimId);
             if (claim != null && parser(claim.Value, out T value))
                 return value;
+            return defaultValue;
+        }
+
+        public string GetStringClaimValue(ClaimsPrincipal user, string claimId, string defaultValue)
+        {
+            var claim = user.FindFirst(claimId);
+            if (claim != null && !string.IsNullOrEmpty(claim.Value.ToString()))
+                return claim.Value.ToString();
             return defaultValue;
         }
 

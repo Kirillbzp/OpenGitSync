@@ -1,4 +1,5 @@
-﻿using DB.Models;
+﻿using AutoMapper;
+using DB.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenGitSync.Server.Services;
@@ -12,20 +13,22 @@ namespace OpenGitSync.Server.Controllers
     public class UserProjectController : ApiControllerBase
     {
         private readonly IUserProjectService _userProjectService;
+        private readonly IMapper _mapper;
 
-        public UserProjectController(IApiControllerWrapper wrapper, IUserProjectService userProjectService) : base(wrapper)
+        public UserProjectController(IApiControllerWrapper wrapper, IUserProjectService userProjectService, IMapper mapper) : base(wrapper)
         {
             _userProjectService = userProjectService;
+            _mapper = mapper;
         }
 
         [HttpPost]
         public ActionResult<UserProjectDto> AddUserToProject(UserProjectCreateDto createDto)
         {
-            var userProject = MapCreateDtoToUserProject(createDto);
+            var userProject = _mapper.Map<UserProject>(createDto);
 
             _userProjectService.AddUserToProject(userProject);
 
-            var userProjectDto = MapUserProjectToDto(userProject);
+            var userProjectDto =  _mapper.Map<UserProjectDto>(userProject);
             return CreatedAtAction(nameof(GetUserProjectById), new { id = userProject.Id }, userProjectDto);
         }
 
@@ -48,7 +51,7 @@ namespace OpenGitSync.Server.Controllers
             if (userProject == null)
                 return NotFound();
 
-            var userProjectDto = MapUserProjectToDto(userProject);
+            var userProjectDto = _mapper.Map<UserProjectDto>(userProject);
             return Ok(userProjectDto);
         }
 
@@ -57,39 +60,10 @@ namespace OpenGitSync.Server.Controllers
         {
             var userProjects = _userProjectService.GetUserProjectsByProjectId(projectId);
 
-            var userProjectDtos = userProjects.Select(up => MapUserProjectToDto(up));
+            var userProjectDtos = userProjects.Select(up => _mapper.Map<UserProjectDto>(up));
             return Ok(userProjectDtos);
         }
 
-        private UserProjectDto MapUserProjectToDto(UserProject userProject)
-        {
-            // Implement the mapping from UserProject entity to UserProjectDto
-            // You can use a library like AutoMapper or manually map the properties
-            // Here's an example using manual mapping:
-            var userProjectDto = new UserProjectDto
-            {
-                Id = userProject.Id,
-                UserId = userProject.UserId,
-                ProjectId = userProject.ProjectId,
-                Role = userProject.Role
-            };
-
-            return userProjectDto;
-        }
-
-        private UserProject MapCreateDtoToUserProject(UserProjectCreateDto createDto)
-        {
-            // Implement the mapping from UserProjectCreateDto to UserProject entity
-            // Here's an example:
-            var userProject = new UserProject
-            {
-                UserId = createDto.UserId,
-                ProjectId = createDto.ProjectId,
-                Role = createDto.Role
-            };
-
-            return userProject;
-        }
     }
 
 }
