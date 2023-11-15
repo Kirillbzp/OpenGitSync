@@ -2,9 +2,9 @@
 {
     public class LoginResult
     {
-        public bool Succeeded { get; }
-        public string Token { get; }
-        public string ErrorMessage { get; }
+        public bool Succeeded { get; set; }
+        public string Token { get; set; }
+        public string ErrorMessage { get; set; }
 
         private LoginResult(bool succeeded, string token, string errorMessage)
         {
@@ -13,14 +13,19 @@
             ErrorMessage = errorMessage;
         }
 
+        public LoginResult()
+        {
+
+        }
+    
         public static LoginResult Success(string token)
         {
-            return new LoginResult(true, token, null);
+            return new LoginResult(true, token, "");
         }
 
         public static LoginResult Failed(string errorMessage)
         {
-            return new LoginResult(false, null, errorMessage);
+            return new LoginResult(false, "", errorMessage);
         }
     }
 

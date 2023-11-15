@@ -37,7 +37,7 @@ else
 }
 
 @code {
-    List<ProjectDto> Projects { get; set; }
+    public List<ProjectDto> Projects { get; set; } = new List<ProjectDto>();
 
     protected override async Task OnInitializedAsync()
     {

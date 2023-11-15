@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using OpenGitSync.Server;
+using OpenGitSync.Server.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,8 +54,38 @@ builder.Services.AddDefaultIdentity<User>(options => {
 builder.Services.AddIdentityServer()
     .AddApiAuthorization<User, AppDbContext>();
 
-builder.Services.AddAuthentication()
-    .AddIdentityServerJwt();
+// configure strongly typed settings objects	    
+var jwtSection = builder.Configuration.GetSection("Jwt");
+builder.Services.Configure<JwtBearerTokenSettings>(jwtSection);
+
+var jwtBearerTokenSettings = jwtSection.Get<JwtBearerTokenSettings>();
+var key = Encoding.UTF8.GetBytes(jwtBearerTokenSettings.SecretKey);
+
+var jwtTokenValidationParameters = new TokenValidationParameters()
+{
+    ValidateIssuer = true,
+    ValidIssuer = jwtBearerTokenSettings.Issuer,
+    ValidateAudience = true,
+    ValidAudience = jwtBearerTokenSettings.Audience,
+    ValidateIssuerSigningKey = true,
+    IssuerSigningKey = new SymmetricSecurityKey(key),
+    ValidateLifetime = true,
+    ClockSkew = TimeSpan.FromSeconds(60)
+};
+
+builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }
+    )
+//    .AddIdentityServerJwt();
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = false;
+        options.SaveToken = true;
+        options.TokenValidationParameters = jwtTokenValidationParameters;
+    });
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
@@ -80,10 +111,9 @@ app.UseHttpsRedirection();
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
-app.UseAuthentication();
-
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();

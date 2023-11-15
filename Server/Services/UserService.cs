@@ -1,7 +1,9 @@
 ﻿using DB.Helpers;
 using DB.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using OpenGitSync.Server.Models;
 using OpenGitSync.Shared.DataTransferObjects;
 using OpenGitSync.Shared.ViewModels;
 using System.IdentityModel.Tokens.Jwt;
@@ -28,14 +30,21 @@ namespace OpenGitSync.Server.Services
         private readonly IConfiguration _configuration;
         private readonly IUserRepository _userRepository;
         private readonly IProjectRepository _projectRepository;
+        private readonly JwtBearerTokenSettings _tokenSettings;
 
-        public UserService(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration, IUserRepository userRepository, IProjectRepository projectRepository)
+        public UserService(UserManager<User> userManager, 
+                           SignInManager<User> signInManager, 
+                           IConfiguration configuration, 
+                           IUserRepository userRepository, 
+                           IProjectRepository projectRepository,
+                           IOptions<JwtBearerTokenSettings> jwtTokenOptions)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
             _userRepository = userRepository;
             _projectRepository = projectRepository;
+            _tokenSettings = jwtTokenOptions.Value;
         }
 
         public async Task<IdentityResult> RegisterUserAsync(UserRegistrationDto registrationDto)
@@ -71,33 +80,44 @@ namespace OpenGitSync.Server.Services
 
             var token = GenerateToken(user);
 
+            await _signInManager.SignInAsync(user, true);
+
             return LoginResult.Success(token);
         }
 
         private string GenerateToken(User user)
         {
+            var tokenHandler = new JwtSecurityTokenHandler();
+
             var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.UserName)
-            // Add additional claims as needed
+            new Claim(ClaimTypes.Name, user.UserName.ToString()),
+            new Claim(ClaimTypes.Sid, user.Id.ToString()),
+            new Claim(ClaimTypes.Email, user.Email)
+            // ToDo: Add additional claims
         };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
+            //var tokenSettings = _configuration.GetSection("Jwt").Get<JwtBearerTokenSettings>();
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_tokenSettings.SecretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.UtcNow.AddDays(Convert.ToDouble(_configuration["Jwt:TokenExpirationDays"]));
+            var expires = DateTime.UtcNow.AddHours(Convert.ToDouble(_tokenSettings.ExpiryTimeInHours));
 
-            var token = new JwtSecurityToken(
-                _configuration["Jwt:Issuer"],
-                _configuration["Jwt:Audience"],
-                claims,
-                expires: expires,
-                signingCredentials: creds
-            );
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = expires,
+                SigningCredentials = creds,
+                Audience = _tokenSettings.Audience,
+                Issuer = _tokenSettings.Issuer
+            };
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+
+            return tokenHandler.WriteToken(token);
         }
 
+        
         public UserDto GetUserById(string userId)
         {
             var user = _userRepository.GetUserById(userId);

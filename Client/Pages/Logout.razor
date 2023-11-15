@@ -1,0 +1,19 @@
+﻿@page "/logout"
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize]
+@inherits LayoutComponentBase
+@using OpenGitSync.Client.Services;
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+
+<div class="container">
+    <p>Logging out...</p>
+</div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthService.Logout();
+        NavigationManager.NavigateTo("login");
+    }
+}

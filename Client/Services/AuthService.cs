@@ -1,5 +1,4 @@
-﻿using Blazored.LocalStorage;
-using Microsoft.AspNetCore.Components;
+﻿using OpenGitSync.Client.Providers;
 using OpenGitSync.Shared.DataTransferObjects;
 using OpenGitSync.Shared.ViewModels;
 using System.Net.Http.Json;
@@ -10,18 +9,24 @@ namespace OpenGitSync.Client.Services
     {
         public Task<string> AuthenticateAsync(string email, string password);
         public Task<ResponceResultDto> RegisterAsync(string username, string email, string password);
+        public Task Logout();
     }
     public class AuthService : IAuthService
     {
         private readonly HttpClient _httpPublicClient;
-        private readonly ILocalStorageService _localStorage;
-        public AuthService(IHttpClientFactory ClientFactory, ILocalStorageService localStorage)
+        private readonly ITokenService _tokenService;
+        private readonly CustomAuthenticationStateProvider _customAuthenticationStateProvider;
+
+        public AuthService(IHttpClientFactory ClientFactory, 
+                           CustomAuthenticationStateProvider customAuthenticationStateProvider,
+                           ITokenService tokenService)
         {
             _httpPublicClient = ClientFactory.CreateClient("OpenGitSync.PublicServerAPI");
-            _localStorage = localStorage;
+            _customAuthenticationStateProvider = customAuthenticationStateProvider;
+            _tokenService = tokenService;
         }
 
-        public async Task<ResponceResultDto> RegisterAsync (string username, string email, string password)
+        public async Task<ResponceResultDto> RegisterAsync(string username, string email, string password)
         {
             var registrationDto = new UserRegistrationDto
             {
@@ -47,19 +52,21 @@ namespace OpenGitSync.Client.Services
 
             if (response.IsSuccessStatusCode)
             {
-                // User login successful
                 var result = await response.Content.ReadFromJsonAsync<LoginResult>();
 
-                // Check if the login was successful
+                //Check if the login was successful
                 if (result != null && result.Succeeded)
                 {
-                    await _localStorage.SetItemAsync("token", result.Token);
+
+                    //User login successful
+                    await _tokenService.SetToken(result.Token);
+                    _customAuthenticationStateProvider.StateChanged();
 
                     return "";
                 }
                 else
                 {
-                    // Display the error message from the API response
+                    //Display the error message from the API response
                     if (result == null)
                     {
                         return "General error";
@@ -76,5 +83,11 @@ namespace OpenGitSync.Client.Services
                 return "Invalid email or password.";
             }
         }
+
+        public async Task Logout()
+        {
+            await _tokenService.RemoveToken();
+            _customAuthenticationStateProvider.StateChanged();
+        }   
     }
 }
