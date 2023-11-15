@@ -1,6 +1,7 @@
 ﻿using Duende.IdentityServer.ResponseHandling;
 using Microsoft.AspNetCore.Identity;
 using OpenGitSync.Shared.DataTransferObjects;
+using OpenGitSync.Shared.ViewModels;
 using System.Runtime.CompilerServices;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -12,5 +13,6 @@ namespace OpenGitSync.Server.Helpers
         {
             return new ResponceResultDto() { Success = false, Errors = result.Errors.Select(e => e.Description).ToList() };
         }
+
     }
 }

@@ -31,20 +31,20 @@ namespace OpenGitSync.Server.Services
         public IEnumerable<ProjectDto> GetProjects()
         {
             var projects = _projectRepository.GetProjects();
-            return projects.Select(p => MapToDto(p));
+            return projects.Select(p => _mapper.Map<ProjectDto>(p));
         }
 
         public ProjectDto GetProjectById(long id)
         {
             var project = _projectRepository.GetProjectById(id);
-            return project != null ? MapToDto(project) : null;
+            return project != null ? _mapper.Map<ProjectDto>(project) : null;
         }
 
         public ProjectDto CreateProject(ProjectDto projectDto)
         {
-            var project = MapToEntity(projectDto);
+            var project = _mapper.Map<Project>(projectDto);
             var createdProject = _projectRepository.CreateProject(project);
-            return MapToDto(createdProject);
+            return _mapper.Map<ProjectDto>(createdProject);
         }
 
         public ProjectDto UpdateProject(long id, ProjectDto projectDto)
@@ -59,7 +59,7 @@ namespace OpenGitSync.Server.Services
             existingProject.SyncSettings = projectDto.SyncSettings.Select(s => _mapper.Map<SyncSetting>(s)).ToList();
 
             var updatedProject = _projectRepository.UpdateProject(existingProject);
-            return MapToDto(updatedProject);
+            return _mapper.Map<ProjectDto>(updatedProject);
         }
 
         public ProjectDto DeleteProject(long id)
@@ -70,39 +70,13 @@ namespace OpenGitSync.Server.Services
                 return null;
 
             var deletedProject = _projectRepository.DeleteProject(existingProject);
-            return MapToDto(deletedProject);
-        }
-
-        private ProjectDto MapToDto(Project project)
-        {
-            return new ProjectDto
-            {
-                Id = project.Id,
-                Name = project.Name,
-                Description = project.Description,
-                SyncSettings = project.SyncSettings.Select(s =>  _mapper.Map<SyncSettingDto>(s)).ToList()
-            };
-        }
-
-        private Project MapToEntity(ProjectDto projectDto)
-        {
-            return new Project
-            {
-                Name = projectDto.Name,
-                Description = projectDto.Description,
-                SyncSettings = projectDto.SyncSettings.Select(s => _mapper.Map<SyncSetting>(s)).ToList()
-            };
+            return _mapper.Map<ProjectDto>(deletedProject);
         }
 
         public IEnumerable<SyncSettingDto> GetProjectSyncSettings(long projectId)
         {
             var syncSettings = _syncSettingRepository.GetSyncSettingsByProjectId(projectId);
-            var syncSettingDtos = syncSettings.Select(syncSetting => new SyncSettingDto
-            {
-                // Map properties of SyncSetting entity to SyncSettingDto
-                Id = syncSetting.Id,
-                // Map other properties as needed
-            }).ToList();
+            var syncSettingDtos = syncSettings.Select(syncSetting => _mapper.Map<SyncSettingDto>(syncSetting)).ToList();
 
             return syncSettingDtos;
         }

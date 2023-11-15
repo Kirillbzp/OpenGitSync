@@ -2,7 +2,6 @@
 @using OpenGitSync.Shared.DataTransferObjects;
 @using Microsoft.AspNetCore.Authorization;
 @attribute [Authorize]
-@inject HttpClient HttpClient
 
 <PageTitle>Projects</PageTitle>
 
@@ -40,15 +39,16 @@ else
 }
 
 @code {
-    private List<ProjectDto> ProjectsList { get; set; }
+    private List<ProjectDto> ProjectsList { get; set; } = new List<ProjectDto>();
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadProjects();
+        //Projects = await ProjectService.GetProjects();
+        //await LoadProjects();
     }
 
     private async Task LoadProjects()
     {
-        ProjectsList = await HttpClient.GetFromJsonAsync<List<ProjectDto>>("/api/projects");
+        //ProjectsList = await HttpClient.GetFromJsonAsync<List<ProjectDto>>("/api/projects");
     }
 }
