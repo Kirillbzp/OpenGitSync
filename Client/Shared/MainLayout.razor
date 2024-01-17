@@ -16,7 +16,7 @@
         <div class="top-row px-4">
             <AuthorizeView>
                 <Authorized>
-                    <text>Hello, @context.User.Identity.Name</text>
+                    <text>Hello, @context.User.Identity.Name </text>
                     <a href="/logout">Logout</a>
                 </Authorized>
                 <NotAuthorized>
@@ -36,8 +36,12 @@
 </div>
 
 @code {
+    private AuthenticationStateProvider AuthenticationStateProvider = default!;
     private Sidebar sidebar = default!;
     private IEnumerable<NavItem> navItems = default!;
+
+    // how to get access to the context?
+    
 
     private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
     {

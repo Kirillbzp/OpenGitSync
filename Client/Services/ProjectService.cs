@@ -19,10 +19,12 @@ namespace OpenGitSync.Client.Services
     public class ProjectService : IProjectService
     {
         private readonly HttpClient _httpClient;
+        //private readonly IHttpClientFactory _clientFactory;
 
-        public ProjectService(HttpClient httpClient)
+        public ProjectService(HttpClient httpClient, IHttpClientFactory clientFactory)
         {
             _httpClient = httpClient;
+            //_httpClient = clientFactory.CreateClient("OpenGitSync.ServerAPI");
         }
 
         public async Task<List<ProjectDto>> GetProjects()

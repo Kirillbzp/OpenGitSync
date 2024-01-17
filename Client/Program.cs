@@ -7,6 +7,7 @@ using BlazorBootstrap;
 using OpenGitSync.Client.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using OpenGitSync.Client.Providers;
+using OpenGitSync.Client.MessageHandlers;
 
 Console.WriteLine("Starting OGS...");
 
@@ -21,28 +22,33 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 //var apiUrl = builder.Configuration.GetValue<string>("ClientSettings:ApiUrl");
 //var apiUrl = "https://localhost:51042/";
 
-// Supply HttpClient instances that include access tokens when making requests to the server project
-builder.Services.AddHttpClient("OpenGitSync.ServerAPI", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
-    .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>();
-
-//builder.Services.AddHttpClient("OpenGitSync.ServerAPI", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
-
-builder.Services.AddHttpClient("OpenGitSync.PublicServerAPI", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
-
-builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("OpenGitSync.ServerAPI"));
-
-builder.Services.AddTransient<IProjectService, ProjectService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<ITokenService, TokenService>();
-
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazorBootstrap();
 builder.Services.AddApiAuthorization();
 //builder.Services.AddAuthorizationCore();
 
+
+// Supply HttpClient instances that include access tokens when making requests to the server project
+builder.Services.AddHttpClient("OpenGitSync.ServerAPI", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
+    .AddHttpMessageHandler<CustomAuthorizationMessageHandler>();
+
+builder.Services.AddHttpClient("OpenGitSync.PublicServerAPI", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
+
+//builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("OpenGitSync.ServerAPI"));
+builder.Services.AddScoped(sp => new HttpClient(
+    sp.GetRequiredService<CustomAuthorizationMessageHandler>())
+{
+    BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
+});
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IAccessTokenProvider, CustomAccessTokenProvider>();
+
 builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthenticationStateProvider>());
+builder.Services.AddScoped<CustomAuthorizationMessageHandler>();
 
-builder.Services.AddScoped<IAccessTokenProvider, CustomAccessTokenProvider>();
+builder.Services.AddTransient<IProjectService, ProjectService>();
 
 await builder.Build().RunAsync();

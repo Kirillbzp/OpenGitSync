@@ -1,6 +1,9 @@
 ﻿@page "/projects"
+@using OpenGitSync.Client.Services
 @using OpenGitSync.Shared.DataTransferObjects;
 @using Microsoft.AspNetCore.Authorization;
+@inject IProjectService ProjectService
+
 @attribute [Authorize]
 
 <PageTitle>Projects</PageTitle>
@@ -36,6 +39,8 @@ else
             }
         </tbody>
     </table>
+    
+    <a href="/create-project">Create new project</a>
 }
 
 @code {
@@ -43,12 +48,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        //Projects = await ProjectService.GetProjects();
-        //await LoadProjects();
-    }
-
-    private async Task LoadProjects()
-    {
-        //ProjectsList = await HttpClient.GetFromJsonAsync<List<ProjectDto>>("/api/projects");
+        ProjectsList = await ProjectService.GetProjects();
     }
 }

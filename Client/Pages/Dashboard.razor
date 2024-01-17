@@ -7,11 +7,11 @@
 
 <h3>Dashboard</h3>
 
-@if (Projects == null)
+@if (ProjectsList == null)
 {
     <p>Loading...</p>
 }
-else if (Projects.Any())
+else if (ProjectsList.Any())
 {
     <table class="table">
         <thead>
@@ -21,7 +21,7 @@ else if (Projects.Any())
             </tr>
         </thead>
         <tbody>
-            @foreach (var project in Projects)
+            @foreach (var project in ProjectsList)
             {
                 <tr>
                     <td>@project.Name</td>
@@ -37,10 +37,10 @@ else
 }
 
 @code {
-    public List<ProjectDto> Projects { get; set; } = new List<ProjectDto>();
+    public List<ProjectDto> ProjectsList { get; set; } = new List<ProjectDto>();
 
     protected override async Task OnInitializedAsync()
     {
-        Projects = await ProjectService.GetProjects();
+        ProjectsList = await ProjectService.GetProjects();
     }
 }

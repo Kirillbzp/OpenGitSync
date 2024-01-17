@@ -90,12 +90,12 @@ namespace OpenGitSync.Server.Services
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.UserName.ToString()),
-            new Claim(ClaimTypes.Sid, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email)
-            // ToDo: Add additional claims
-        };
+            {
+                new Claim(ClaimTypes.Name, user.UserName.ToString()),
+                new Claim(ClaimTypes.Sid, user.Id.ToString()),
+                new Claim(ClaimTypes.Email, user.Email)
+                // ToDo: Add additional claims
+            };
 
             //var tokenSettings = _configuration.GetSection("Jwt").Get<JwtBearerTokenSettings>();
 
