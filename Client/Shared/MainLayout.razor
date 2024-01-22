@@ -1,11 +1,12 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
 @inherits LayoutComponentBase
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <div class="bb-page">
 
     <Sidebar @ref="sidebar"
              IconName="IconName.Git"
-             Title="Open Git Sync"
+             Title="@title"
              DataProvider="SidebarDataProvider" />
 
     <main>
@@ -16,8 +17,8 @@
         <div class="top-row px-4">
             <AuthorizeView>
                 <Authorized>
-                    <text>Hello, @context.User.Identity.Name </text>
-                    <a href="/logout">Logout</a>
+                    @* <text>Hello, @context.User?.Identity?.Name </text>
+                    <a href="/logout">Logout</a> *@
                 </Authorized>
                 <NotAuthorized>
                     <a href="/login">Login</a>
@@ -36,12 +37,23 @@
 </div>
 
 @code {
-    private AuthenticationStateProvider AuthenticationStateProvider = default!;
+    private string title = "Open Git Sync";
+    private string userName = "";
+
+    //private AuthenticationStateProvider AuthenticationStateProvider = default!;
     private Sidebar sidebar = default!;
     private IEnumerable<NavItem> navItems = default!;
 
-    // how to get access to the context?
-    
+    protected override async Task OnInitializedAsync()
+    {
+        // Get the current authentication state
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        if(authenticationState != null)
+        {
+            userName = authenticationState.User?.Identity?.Name;
+        }
+    }
 
     private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
     {

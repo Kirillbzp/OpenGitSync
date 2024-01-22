@@ -1,5 +1,4 @@
 ﻿using Blazored.LocalStorage;
-using OpenGitSync.Shared.DataTransferObjects;
 
 namespace OpenGitSync.Client.Services
 {

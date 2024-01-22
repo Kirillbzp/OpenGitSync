@@ -1,13 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using OpenGitSync.Client.Services;
 using System.Security.Claims;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace OpenGitSync.Client.Providers
 {
-    public class CustomAuthenticationStateProvider : AuthenticationStateProvider//, IAccessTokenProvider
+    public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     {
         private readonly ITokenService tokenService;
         

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using OpenGitSync.Client.Services;
-using System.Threading.Tasks;
 
 namespace OpenGitSync.Client.Providers
 {

@@ -32,23 +32,6 @@ namespace OpenGitSync.Server
             services.AddScoped<IApiControllerWrapper, ApiControllerWrapper>();
             services.AddScoped<IRequestHelper, RequestHelper>();
             
-            //services.AddSingleton(provider =>
-            //{
-            //    var mappingConfig = new MapperConfiguration(mc =>
-            //    {
-            //        mc.AddProfile(new AutomapperProfileMongo());
-            //        mc.AddProfile(new AutoMapperProfileEs());
-            //        mc.AddProfile(new AutoMapperProfileEf());
-            //        mc.ConstructServicesUsing(type =>
-            //        {
-            //            return provider.GetRequiredService(type);
-            //            //return ActivatorUtilities.CreateInstance(provider, type);
-            //        });
-            //    });
-            //    mappingConfig.AssertConfigurationIsValid();
-            //    return mappingConfig.CreateMapper();
-            //});
-
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IProjectService, ProjectService>();
             services.AddScoped<INotificationService, NotificationService>();

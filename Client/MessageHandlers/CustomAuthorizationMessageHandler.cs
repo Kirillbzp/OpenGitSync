@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using OpenGitSync.Client.Providers;
 using System.Net.Http.Headers;
-using System.Threading.Tasks.Sources;
 
 namespace OpenGitSync.Client.MessageHandlers
 {

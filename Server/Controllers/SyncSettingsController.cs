@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenGitSync.Server.Services;
 using OpenGitSync.Shared.DataTransferObjects;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace OpenGitSync.Server.Controllers
 {
