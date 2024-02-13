@@ -47,14 +47,14 @@
         }
 
         // Create a ProjectDto object with the form data
-        var projectDto = new ProjectDto
+        var createProjectDto = new CreateProjectDto
             {
                 Name = ProjectName,
                 Description = ProjectDescription
             };
 
         // Make an API request to create the project
-        var response = await HttpClient.PostAsJsonAsync("/api/projects", projectDto);
+        var response = await HttpClient.PostAsJsonAsync("/api/projects", createProjectDto);
 
         if (response.IsSuccessStatusCode)
         {

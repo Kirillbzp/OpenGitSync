@@ -35,6 +35,7 @@ namespace DB.Helpers
         public Project CreateProject(Project project)
         {
             project.CreatedAt = DateTime.Now;
+            project.UpdatedAt = DateTime.Now;
             _dbContext.Projects.Add(project);
             _dbContext.SaveChanges();
             return project;

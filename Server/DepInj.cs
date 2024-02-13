@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using OpenGitSync.Server.Controllers;
 using OpenGitSync.Server.Helpers;
+using OpenGitSync.Server.Helpers.Automapper;
 using OpenGitSync.Server.Services;
 
 
@@ -20,6 +21,7 @@ namespace OpenGitSync.Server
             {
                 var mappingConfig = new MapperConfiguration(mc =>
                 {
+                    mc.AddProfile(new AutomapperProfile());
                     mc.ConstructServicesUsing(type =>
                     {
                         return provider.GetRequiredService(type);

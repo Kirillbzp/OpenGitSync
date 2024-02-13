@@ -9,7 +9,7 @@ namespace OpenGitSync.Server.Services
     {
         IEnumerable<ProjectDto> GetProjects();
         ProjectDto GetProjectById(long id);
-        ProjectDto CreateProject(ProjectDto projectDto);
+        ProjectDto CreateProject(CreateProjectDto projectDto);
         ProjectDto UpdateProject(long id, ProjectDto projectDto);
         ProjectDto DeleteProject(long id);
         IEnumerable<SyncSettingDto> GetProjectSyncSettings(long projectId);
@@ -40,7 +40,7 @@ namespace OpenGitSync.Server.Services
             return project != null ? _mapper.Map<ProjectDto>(project) : null;
         }
 
-        public ProjectDto CreateProject(ProjectDto projectDto)
+        public ProjectDto CreateProject(CreateProjectDto projectDto)
         {
             var project = _mapper.Map<Project>(projectDto);
             var createdProject = _projectRepository.CreateProject(project);
