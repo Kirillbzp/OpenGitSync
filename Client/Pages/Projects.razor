@@ -1,5 +1,6 @@
 ﻿@page "/projects"
 @using OpenGitSync.Client.Services
+@using OpenGitSync.Client.Shared
 @using OpenGitSync.Shared.DataTransferObjects;
 @using Microsoft.AspNetCore.Authorization;
 @inject IProjectService ProjectService
@@ -12,7 +13,7 @@
 
 @if (ProjectsList == null)
 {
-    <p>Loading projects...</p>
+    <LoadingIndicator LoadingMessage="Loading projects..." />
 }
 else if (ProjectsList.Count == 0)
 {
@@ -44,7 +45,7 @@ else
 <a href="/create-project">Create new project</a>
 
 @code {
-    private List<ProjectDto> ProjectsList { get; set; } = new List<ProjectDto>();
+    private List<ProjectDto> ProjectsList { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

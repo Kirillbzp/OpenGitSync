@@ -1,5 +1,6 @@
 ﻿@page "/dashboard"
 @using OpenGitSync.Client.Services;
+@using OpenGitSync.Client.Shared
 @using OpenGitSync.Shared.DataTransferObjects;
 @using Microsoft.AspNetCore.Authorization;
 @attribute [Authorize]
@@ -9,7 +10,7 @@
 
 @if (ProjectsList == null)
 {
-    <p>Loading...</p>
+    <LoadingIndicator LoadingMessage="Loading projects..." />
 }
 else if (ProjectsList.Any())
 {
@@ -37,7 +38,7 @@ else
 }
 
 @code {
-    public List<ProjectDto> ProjectsList { get; set; } = new List<ProjectDto>();
+    public List<ProjectDto> ProjectsList { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

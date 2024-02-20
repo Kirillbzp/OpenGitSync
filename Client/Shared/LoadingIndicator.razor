@@ -1,6 +1,10 @@
 ﻿<div class="text-center">
     <div class="spinner-border" role="status">
-        <span class="sr-only">Loading...</span>
+        <span class="sr-only"></span>
     </div>
-    <p class="mt-2">Loading...</p>
+    <p class="mt-2">@LoadingMessage</p>
 </div>
+
+@code {
+    [Parameter] public string LoadingMessage { get; set; } = "Loading...";
+}

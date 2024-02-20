@@ -63,3 +63,7 @@ h1:focus {
     .loading-progress-text:after {
         content: var(--blazor-load-percentage-text, "Loading");
     }
+
+.form-group {
+    margin-bottom: 1rem;
+}

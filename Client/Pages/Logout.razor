@@ -3,11 +3,12 @@
 @attribute [Authorize]
 @inherits LayoutComponentBase
 @using OpenGitSync.Client.Services;
+@using OpenGitSync.Client.Shared
 @inject IAuthService AuthService
 @inject NavigationManager NavigationManager
 
 <div class="container">
-    <p>Logging out...</p>
+    <LoadingIndicator loadingMessage="Logging out..." />
 </div>
 
 @code {

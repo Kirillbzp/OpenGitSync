@@ -1,5 +1,6 @@
 ﻿@page "/notifications"
 @using OpenGitSync.Client.Services;
+@using OpenGitSync.Client.Shared
 @using OpenGitSync.Shared.DataTransferObjects;
 @using Microsoft.AspNetCore.Authorization;
 @attribute [Authorize]
@@ -9,7 +10,7 @@
 
 @if (notifications == null)
 {
-    <p>Loading notifications...</p>
+    <LoadingIndicator loadingMessage="Loading notifications..." />
 }
 else if (notifications.Count() == 0)
 {
