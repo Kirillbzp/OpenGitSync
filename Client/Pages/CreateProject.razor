@@ -1,4 +1,5 @@
 ﻿@page "/create-project"
+@using Microsoft.AspNetCore.Components.Forms
 @using OpenGitSync.Shared.DataTransferObjects;
 @using Microsoft.AspNetCore.Authorization;
 @attribute [Authorize]
@@ -14,47 +15,46 @@
     <div class="alert alert-danger">@ErrorMessage</div>
 }
 
-<div class="card mt-4">
-    <div class="card-body">
-        <h5 class="card-title">Project Information</h5>
+<EditForm EditContext="editContext" OnValidSubmit="HandleCreateProject">
+        <DataAnnotationsValidator />
 
-        <div class="form-group">
-            <label for="name">Name</label>
-            <input type="text" id="name" class="form-control" placeholder="Enter project name" @bind="ProjectName" />
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Project Information</h5>
+
+                <div class="form-group">
+                    <label for="name">Name</label>
+                <InputText type="text" id="name" class="form-control" placeholder="Enter project name" @bind-Value="Project.Name" />
+                    <ValidationMessage For="@(() => Project.Name)" />
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                <textarea id="description" class="form-control" placeholder="Enter project description" @bind="Project.Description"></textarea>
+                </div>
+
+                <div class="form-group">
+                <button type="submit" class="btn btn-primary">Create Project</button>
+                </div>
+            </div>
         </div>
-
-        <div class="form-group">
-            <label for="description">Description</label>
-            <textarea id="description" class="form-control" placeholder="Enter project description" @bind="ProjectDescription"></textarea>
-        </div>
-
-        <button type="submit" class="btn btn-primary" @onclick="HandleCreateProject">Create Project</button>
-    </div>
-</div>
+    </EditForm>
 
 @code {
-    private string ProjectName { get; set; }
-    private string ProjectDescription { get; set; }
+    private CreateProjectDto Project { get; set; } = new CreateProjectDto();
     private string ErrorMessage { get; set; }
+    [Inject] protected ToastService ToastService { get; set; } = default!;
+    private EditContext editContext;
+
+    protected override async Task OnInitializedAsync()
+    {
+        editContext = new EditContext(Project);
+    }
 
     private async Task HandleCreateProject()
     {
-        // Validate the form inputs
-        if (string.IsNullOrWhiteSpace(ProjectName))
-        {
-            ErrorMessage = "Project name is required";
-            return;
-        }
-
-        // Create a ProjectDto object with the form data
-        var createProjectDto = new CreateProjectDto
-            {
-                Name = ProjectName,
-                Description = ProjectDescription
-            };
-
         // Make an API request to create the project
-        var response = await HttpClient.PostAsJsonAsync("/api/projects", createProjectDto);
+        var response = await HttpClient.PostAsJsonAsync("/api/projects", Project);
 
         if (response.IsSuccessStatusCode)
         {
@@ -62,13 +62,14 @@
             var createdProject = await response.Content.ReadFromJsonAsync<ProjectDto>();
             if (createdProject != null)
             {
-                NavigationManager.NavigateTo($"/project/{createdProject.Id}");
+                ToastService.Notify(new(ToastType.Success, $"Project created successfully."));
+                NavigationManager.NavigateTo($"/edit-project/{createdProject.Id}");
             }
         }
         else
         {
             // Handle the project creation error, display an error message, or perform other actions
-            ErrorMessage = "Failed to create project";
+            ToastService.Notify(new(ToastType.Danger, $"Failed to create project."));
         }
     }
 }

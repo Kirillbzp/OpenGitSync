@@ -1,7 +1,9 @@
 ﻿@page "/profile"
+@using Microsoft.AspNetCore.Components.Forms
 @using OpenGitSync.Client.Shared
 @using OpenGitSync.Shared.DataTransferObjects;
 @using Microsoft.AspNetCore.Authorization;
+@using System.Linq.Expressions
 @attribute [Authorize]
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
@@ -10,31 +12,54 @@
 
 <h3>User Settings</h3>
 
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger">@ErrorMessage</div>
+}
+
 @if (User == null)
 {
     <LoadingIndicator loadingMessage="Loading user profile..." />
 }
 else
 {
-    <form>
-        <div class="form-group">
-            <label for="name">Name:</label>
-            <input type="text" class="form-control" id="name" @bind="@User.UserName" />
+    <EditForm EditContext="editContext" OnValidSubmit="HandleUpdateUser">
+        <DataAnnotationsValidator />
+        
+        <div class="card mt-4">
+            <div class="card-body">
+
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" class="form-control" id="email" disabled=true @bind="@User.Email" />
+                </div>
+
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <InputText type="text" class="form-control" id="name" @bind-Value="@User.UserName" />
+                    <ValidationMessage For="@(() => User.UserName)" />
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" class="form-control" id="email" @bind="@User.Email" />
-        </div>
-        <button type="button" class="btn btn-primary" @onclick="SaveSettings">Save</button>
-    </form>
+
+    </EditForm>
+
 }
 
 @code {
     private UserProfileDto User { get; set; }
+    private string ErrorMessage { get; set; }
+    [Inject] protected ToastService ToastService { get; set; } = default!;
+    private EditContext editContext;
 
     protected override async Task OnInitializedAsync()
     {
         await LoadUserProfile();
+        editContext = new EditContext(User);
     }
 
     private async Task LoadUserProfile()
@@ -42,17 +67,34 @@ else
         User = await HttpClient.GetFromJsonAsync<UserProfileDto>("/api/users/profile");
     }
 
-    private async Task SaveSettings()
+    private async Task HandleUpdateUser()
     {
+        ErrorMessage = "";
+
+        if(!editContext.IsModified())
+        {
+            ToastService.Notify(new(ToastType.Info, $"No changes to put."));
+            return;
+        }
+
         var response = await HttpClient.PutAsJsonAsync("/api/users/profile", User);
 
         if (response.IsSuccessStatusCode)
         {
-            NavigationManager.NavigateTo("/settings", forceLoad: true);
+            ToastService.Notify(new(ToastType.Success, $"User details saved successfully."));
+            NavigationManager.NavigateTo("/profile");
         }
         else
         {
-            // Handle error
+            ToastService.Notify(new(ToastType.Danger, $"Failed to update User details."));
+        }
+    }
+
+    private void FieldChanged(object sender, FieldChangedEventArgs e)
+    {
+        if (e.FieldIdentifier.FieldName == nameof(User.UserName))
+        {
+            editContext.NotifyValidationStateChanged();
         }
     }
 }

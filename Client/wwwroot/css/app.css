@@ -67,3 +67,12 @@ h1:focus {
 .form-group {
     margin-bottom: 1rem;
 }
+
+.invalid {
+    border: 5px solid #ffdddd !important;
+}
+
+.validation-message {
+    padding-left: 1rem;
+    color: #ff0000;
+}
