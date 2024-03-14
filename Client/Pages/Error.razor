@@ -1,0 +1,32 @@
+﻿@page "/error"
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="text-center mt-5">
+                @if (string.IsNullOrEmpty(ErrorMessage))
+                {
+                    <h1 class="display-4">Oops! Something went wrong.</h1>
+                    <p class="lead">We apologize for the inconvenience. Please try again later.</p>
+                }
+                else
+                {
+                    <h1 class="display-4">Error</h1>
+                    <p class="lead">@ErrorMessage</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string ErrorMessage { get; set; }
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    protected override void OnInitialized()
+    {
+        //ErrorMessage = NavigationManager.Uri.
+    }
+}

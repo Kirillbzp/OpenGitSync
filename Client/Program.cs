@@ -8,6 +8,8 @@ using OpenGitSync.Client.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using OpenGitSync.Client.Providers;
 using OpenGitSync.Client.MessageHandlers;
+using Toolbelt.Blazor.Extensions.DependencyInjection;
+using Toolbelt.Blazor;
 
 Console.WriteLine("Starting OGS...");
 
@@ -25,23 +27,22 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazorBootstrap();
 builder.Services.AddApiAuthorization();
-//builder.Services.AddAuthorizationCore();
 
+builder.Services.AddHttpClientInterceptor();
 
 // Supply HttpClient instances that include access tokens when making requests to the server project
-builder.Services.AddHttpClient("OpenGitSync.ServerAPI", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
-    .AddHttpMessageHandler<CustomAuthorizationMessageHandler>();
-
-builder.Services.AddHttpClient("OpenGitSync.PublicServerAPI", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
-
-//builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("OpenGitSync.ServerAPI"));
 builder.Services.AddScoped(sp => new HttpClient(
     sp.GetRequiredService<CustomAuthorizationMessageHandler>())
 {
     BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
-});
+}.EnableIntercept(sp));
+
+// Supply HttpClient instances that does not include access tokens when making requests to the server project
+builder.Services.AddHttpClient("OpenGitSync.PublicServerAPI", (sp, client) => { client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress); client.EnableIntercept(sp); });
 
 builder.Services.AddSingleton<ToastService>();
+
+builder.Services.AddScoped<HttpInterceptorService>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
@@ -51,6 +52,15 @@ builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthenticationStateProvider>());
 builder.Services.AddScoped<CustomAuthorizationMessageHandler>();
 
+builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IProjectService, ProjectService>();
 
-await builder.Build().RunAsync();
+var host = builder.Build();
+
+var httpInterceptor = host.Services.GetService<HttpInterceptorService>();
+
+httpInterceptor?.RegisterEvent();
+
+await host.RunAsync();
+
+

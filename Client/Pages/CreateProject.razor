@@ -1,10 +1,11 @@
 ﻿@page "/create-project"
 @using Microsoft.AspNetCore.Components.Forms
+@using OpenGitSync.Client.Services
 @using OpenGitSync.Shared.DataTransferObjects;
 @using Microsoft.AspNetCore.Authorization;
 @attribute [Authorize]
-@inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
+@inject IProjectService ProjectService
 
 <PageTitle>Create Project</PageTitle>
 
@@ -54,17 +55,13 @@
     private async Task HandleCreateProject()
     {
         // Make an API request to create the project
-        var response = await HttpClient.PostAsJsonAsync("/api/projects", Project);
+        var (isSuccess, createdProject) = await ProjectService.CreateProject(Project); ;
 
-        if (response.IsSuccessStatusCode)
+        if (isSuccess)
         {
             // Project creation successful, redirect to the project details page or perform other actions
-            var createdProject = await response.Content.ReadFromJsonAsync<ProjectDto>();
-            if (createdProject != null)
-            {
-                ToastService.Notify(new(ToastType.Success, $"Project created successfully."));
-                NavigationManager.NavigateTo($"/edit-project/{createdProject.Id}");
-            }
+            ToastService.Notify(new(ToastType.Success, $"Project created successfully."));
+            NavigationManager.NavigateTo($"/edit-project/{createdProject.Id}");
         }
         else
         {

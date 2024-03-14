@@ -6,10 +6,9 @@ namespace OpenGitSync.Client.Services
     public interface IProjectService
     {
         Task<List<ProjectDto>> GetProjects();
-        //Task<ProjectDto> GetProjectById(string id);
-        //Task<ProjectDto> CreateProject(ProjectDto projectCreateDto);
-        //Task<ProjectDto> UpdateProject(string id, ProjectDto projectUpdateDto);
-        //Task<bool> DeleteProject(string id);
+        Task<ProjectDto> GetProjectById(string id);
+        Task<(bool, ProjectDto)> CreateProject(CreateProjectDto projectCreateDto);
+        Task<bool> UpdateProject(long id, ProjectDto projectUpdateDto);
     }
 }
 
@@ -19,40 +18,62 @@ namespace OpenGitSync.Client.Services
     public class ProjectService : IProjectService
     {
         private readonly HttpClient _httpClient;
-        //private readonly IHttpClientFactory _clientFactory;
-
+        
         public ProjectService(HttpClient httpClient, IHttpClientFactory clientFactory)
         {
             _httpClient = httpClient;
-            //_httpClient = clientFactory.CreateClient("OpenGitSync.ServerAPI");
         }
 
         public async Task<List<ProjectDto>> GetProjects()
         {
-            return await _httpClient.GetFromJsonAsync<List<ProjectDto>>("api/projects");
+            var result = await _httpClient.GetFromJsonAsyncSafe<List<ProjectDto>>("api/projects");
+            if (result == null)
+            {
+                return new List<ProjectDto>();
+            }
+            return result;
         }
 
-        //public async Task<ProjectDto> GetProjectById(string id)
-        //{
-        //    return await _httpClient.GetFromJsonAsync<ProjectDto>($"api/projects/{id}");
-        //}
+        public async Task<ProjectDto> GetProjectById(string id)
+        {
+            var result = await _httpClient.GetFromJsonAsyncSafe<ProjectDto>($"api/projects/{id}");
+            if (result == null)
+            {
+                return new ProjectDto();
+            }
+            return result;
+        }
 
-        //public async Task<ProjectDto> CreateProject(ProjectDto projectCreateDto)
-        //{
-        //    var response = await _httpClient.PostAsJsonAsync("api/projects", projectCreateDto);
-        //    return await response.Content.ReadFromJsonAsync<ProjectDto>();
-        //}
+        public async Task<(bool, ProjectDto)> CreateProject(CreateProjectDto projectCreateDto)
+        {
+            try
+            {
+                var result = await _httpClient.PostAsJsonAsync("api/projects", projectCreateDto);
+                var project = await result.Content.ReadFromJsonAsync<ProjectDto>();
+                if (project == null)
+                {
+                    return (false, null);
+                }
+                return (result.IsSuccessStatusCode, project);
+            }
+            catch
+            {
+                return (false, null);
+            }
+        }
 
-        //public async Task<ProjectDto> UpdateProject(string id, ProjectDto projectUpdateDto)
-        //{
-        //    var response = await _httpClient.PutAsJsonAsync($"api/projects/{id}", projectUpdateDto);
-        //    return await response.Content.ReadFromJsonAsync<ProjectDto>();
-        //}
+        public async Task<bool> UpdateProject(long id, ProjectDto projectUpdateDto)
+        {
+            try
+            {
+                var result = await _httpClient.PutAsJsonAsync($"api/projects/{id}", projectUpdateDto);
+                return result.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
-        //public async Task<bool> DeleteProject(string id)
-        //{
-        //    var response = await _httpClient.DeleteAsync($"api/projects/{id}");
-        //    return response.IsSuccessStatusCode;
-        //}
     }
 }

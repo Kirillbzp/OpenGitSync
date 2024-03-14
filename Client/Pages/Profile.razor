@@ -1,11 +1,12 @@
 ﻿@page "/profile"
 @using Microsoft.AspNetCore.Components.Forms
+@using OpenGitSync.Client.Services
 @using OpenGitSync.Client.Shared
 @using OpenGitSync.Shared.DataTransferObjects;
 @using Microsoft.AspNetCore.Authorization;
 @using System.Linq.Expressions
 @attribute [Authorize]
-@inject HttpClient HttpClient
+@inject IUserService UserService
 @inject NavigationManager NavigationManager
 
 <PageTitle>Settings</PageTitle>
@@ -64,7 +65,7 @@ else
 
     private async Task LoadUserProfile()
     {
-        User = await HttpClient.GetFromJsonAsync<UserProfileDto>("/api/users/profile");
+        User = await UserService.GetProfile();
     }
 
     private async Task HandleUpdateUser()
@@ -77,9 +78,9 @@ else
             return;
         }
 
-        var response = await HttpClient.PutAsJsonAsync("/api/users/profile", User);
+        var isSuccess = await UserService.UpdateProfile(User);
 
-        if (response.IsSuccessStatusCode)
+        if (isSuccess)
         {
             ToastService.Notify(new(ToastType.Success, $"User details saved successfully."));
             NavigationManager.NavigateTo("/profile");
