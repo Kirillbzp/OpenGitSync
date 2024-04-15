@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DB.Helpers;
+using DB.Models;
 using OpenGitSync.Shared.DataTransferObjects;
 
 namespace OpenGitSync.Server.Services
@@ -7,8 +8,9 @@ namespace OpenGitSync.Server.Services
     public interface IRepositoryService
     {
         IEnumerable<RepositoryDto> GetRepositories();
+        IEnumerable<RepositoryDto> GetRepositoriesByProject(long projectId);
         RepositoryDto GetRepositoryById(long id);
-        RepositoryDto CreateRepository(RepositoryDto repositoryDto);
+        RepositoryDto CreateRepository(RepositoryCreateDto repositoryDto);
         RepositoryDto UpdateRepository(long id, RepositoryDto repositoryDto);
         RepositoryDto DeleteRepository(long id);
     }
@@ -38,9 +40,17 @@ namespace OpenGitSync.Server.Services
             return repositoryDto;
         }
 
-        public RepositoryDto CreateRepository(RepositoryDto repositoryDto)
+        public IEnumerable<RepositoryDto> GetRepositoriesByProject(long projectId)
         {
-            var createdRepository = _unitOfWork.RepositoryRepository.CreateRepository(repositoryDto.Name, repositoryDto.Url);
+            var repositories = _unitOfWork.RepositoryRepository.GetRepositoriesByProjectId(projectId);
+            var repositoryDtos = _mapper.Map<IEnumerable<RepositoryDto>>(repositories);
+            return repositoryDtos;
+        }
+
+        public RepositoryDto CreateRepository(RepositoryCreateDto repositoryDto)
+        {
+            var repository = _mapper.Map<Repository>(repositoryDto);
+            var createdRepository = _unitOfWork.RepositoryRepository.CreateRepository(repository);
             _unitOfWork.SaveChanges();
             var createdRepositoryDto = _mapper.Map<RepositoryDto>(createdRepository);
             return createdRepositoryDto;

@@ -36,7 +36,7 @@ namespace OpenGitSync.Server.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateProject(CreateProjectDto projectDto)
+        public IActionResult CreateProject(ProjectCreateDto projectDto)
         {
             var createdProject = _projectService.CreateProject(projectDto);
 

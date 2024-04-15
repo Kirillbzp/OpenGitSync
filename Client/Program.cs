@@ -54,6 +54,7 @@ builder.Services.AddScoped<CustomAuthorizationMessageHandler>();
 
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IProjectService, ProjectService>();
+builder.Services.AddTransient<IRepositoryService, RepositoryService>();
 
 var host = builder.Build();
 

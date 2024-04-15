@@ -35,8 +35,15 @@ namespace OpenGitSync.Server.Controllers
             return Ok(repository);
         }
 
+        [HttpGet("project/{projectId}")]
+        public IActionResult GetRepositoriesByProject(long projectId)
+        {
+            var repositories = _repositoryService.GetRepositoriesByProject(projectId);
+            return Ok(repositories);
+        }
+
         [HttpPost]
-        public IActionResult CreateRepository(RepositoryDto repositoryDto)
+        public IActionResult CreateRepository(RepositoryCreateDto repositoryDto)
         {
             var createdRepository = _repositoryService.CreateRepository(repositoryDto);
             return CreatedAtAction(nameof(GetRepository), new { id = createdRepository.Id }, createdRepository);

@@ -36,6 +36,7 @@ namespace DB.Helpers
         {
             project.CreatedAt = DateTime.Now;
             project.UpdatedAt = DateTime.Now;
+
             _dbContext.Projects.Add(project);
             _dbContext.SaveChanges();
             return project;
@@ -44,7 +45,7 @@ namespace DB.Helpers
         public Project UpdateProject(Project project)
         {
             project.UpdatedAt = DateTime.Now;
-            _dbContext.Entry(project).State = EntityState.Modified;
+            _dbContext.Projects.Update(project);
             _dbContext.SaveChanges();
             return project;
         }

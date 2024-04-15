@@ -42,7 +42,7 @@
     </EditForm>
 
 @code {
-    private CreateProjectDto Project { get; set; } = new CreateProjectDto();
+    private ProjectCreateDto Project { get; set; } = new ProjectCreateDto();
     private string ErrorMessage { get; set; }
     [Inject] protected ToastService ToastService { get; set; } = default!;
     private EditContext editContext;

@@ -6,6 +6,12 @@ namespace DB.Models
 {
     public class Repository
     {
+        public Repository() 
+        { 
+            Key = string.Empty;
+            RepositoryType = RepositoryType.Git;
+        }
+
         [Key]
         public long Id { get; set; }
         [Required]
@@ -19,5 +25,7 @@ namespace DB.Models
         public long ProjectId { get; set; }
         [ForeignKey("ProjectId")]
         public Project Project { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
     }
 }

@@ -7,7 +7,7 @@ namespace OpenGitSync.Client.Services
     {
         Task<List<ProjectDto>> GetProjects();
         Task<ProjectDto> GetProjectById(string id);
-        Task<(bool, ProjectDto)> CreateProject(CreateProjectDto projectCreateDto);
+        Task<(bool, ProjectDto)> CreateProject(ProjectCreateDto projectCreateDto);
         Task<bool> UpdateProject(long id, ProjectDto projectUpdateDto);
     }
 }
@@ -44,7 +44,7 @@ namespace OpenGitSync.Client.Services
             return result;
         }
 
-        public async Task<(bool, ProjectDto)> CreateProject(CreateProjectDto projectCreateDto)
+        public async Task<(bool, ProjectDto)> CreateProject(ProjectCreateDto projectCreateDto)
         {
             try
             {

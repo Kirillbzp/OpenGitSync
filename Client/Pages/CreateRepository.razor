@@ -1,0 +1,74 @@
+﻿@page "/create-repository/{ProjectId}"
+@using Microsoft.AspNetCore.Components.Forms
+@using OpenGitSync.Client.Services
+@using OpenGitSync.Shared.DataTransferObjects;
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize]
+@inject NavigationManager NavigationManager
+@inject IRepositoryService RepositoryService
+
+<PageTitle>Create Repository</PageTitle>
+
+<h3>Create Repository</h3>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger">@ErrorMessage</div>
+}
+
+<EditForm EditContext="editContext" OnValidSubmit="HandleCreateRepository">
+        <DataAnnotationsValidator />
+
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Repository Information</h5>
+
+                <div class="form-group">
+                    <label for="name">Name</label>
+                <InputText type="text" id="name" class="form-control" placeholder="Enter repository name" @bind-Value="Repository.Name" />
+                    <ValidationMessage For="@(() => Repository.Name)" />
+                </div>
+
+                <div class="form-group">
+                    <label for="url">URL</label>
+                <textarea id="url" class="form-control" placeholder="Enter repository URL" @bind="Repository.Url"></textarea>
+                </div>
+
+                <div class="form-group">
+                <button type="submit" class="btn btn-primary">Create Repository</button>
+                </div>
+            </div>
+        </div>
+    </EditForm>
+
+@code {
+    private RepositoryCreateDto Repository { get; set; } = new RepositoryCreateDto();
+    private string ErrorMessage { get; set; }
+    [Parameter] public string ProjectId { get; set; }
+    [Inject] protected ToastService ToastService { get; set; } = default!;
+    private EditContext editContext;
+
+    protected override async Task OnInitializedAsync()
+    {
+        editContext = new EditContext(Repository);
+        Repository.ProjectId = long.Parse(ProjectId);
+    }
+
+    private async Task HandleCreateRepository()
+    {
+        // Make an API request to create the repository
+        var (isSuccess, createdRepository) = await RepositoryService.CreateRepository(Repository); ;
+
+        if (isSuccess)
+        {
+            // Repository creation successful, redirect to the repository details page or perform other actions
+            ToastService.Notify(new(ToastType.Success, $"Repository created successfully."));
+            NavigationManager.NavigateTo($"/edit-repository/{createdRepository.Id}");
+        }
+        else
+        {
+            // Handle the repository creation error, display an error message, or perform other actions
+            ToastService.Notify(new(ToastType.Danger, $"Failed to create repository."));
+        }
+    }
+}

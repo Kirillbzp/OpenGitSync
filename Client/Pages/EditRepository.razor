@@ -1,0 +1,105 @@
+﻿@page "/edit-repository/{RepositoryId}"
+@using Microsoft.AspNetCore.Components.Forms
+@using OpenGitSync.Client.Services
+@using OpenGitSync.Client.Shared
+@using OpenGitSync.Shared.DataTransferObjects;
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize]
+@inject NavigationManager NavigationManager
+@inject IRepositoryService RepositoryService
+
+<PageTitle>Edit Repository</PageTitle>
+
+<h3>Edit Repository</h3>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger">@ErrorMessage</div>
+}
+
+@if (Repository == null)
+{
+    <LoadingIndicator loadingMessage="Loading repository information..." />
+}
+else
+{
+    <EditForm EditContext="editContext" OnValidSubmit="HandleUpdateRepository">
+        <DataAnnotationsValidator />
+
+        <div class="card mt-4">
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <InputText type="text" id="name" class="form-control" placeholder="Enter repository name" @bind-Value="Repository.Name" />
+                    <ValidationMessage For="@(() => Repository.Name)" />
+                </div>
+
+                <div class="form-group">
+                    <label for="url">URL</label>
+                    <InputTextArea id="url" class="form-control" placeholder="Enter repository URL" @bind-Value="Repository.Url"></InputTextArea>
+                    <ValidationMessage For="@(() => Repository.Url)" />
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </EditForm>
+
+}
+
+@code {
+    private RepositoryDto Repository { get; set; }
+    private string ErrorMessage { get; set; }
+    [Inject] protected ToastService ToastService { get; set; } = default!;
+    [Parameter] public string RepositoryId { get; set; }
+    private EditContext editContext;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRepository();
+        editContext = new EditContext(Repository);
+    }
+
+    private async Task LoadRepository()
+    {
+        // Make an API request to retrieve the repository by ID
+        var response = await RepositoryService.GetRepositoryById(RepositoryId);
+
+        if (response != null)
+        {
+            Repository = response;
+        }
+        else
+        {
+            ErrorMessage = "Failed to load repository information";
+        }
+    }
+
+    private async Task HandleUpdateRepository()
+    {
+        ErrorMessage = "";
+
+        if(!editContext.IsModified())
+        {
+            ToastService.Notify(new(ToastType.Info, $"No changes to put."));
+            return;
+        }
+
+        // Make an API request to update the repository
+        var isSuccess = await RepositoryService.UpdateRepository(Repository.Id, Repository);
+
+        if (isSuccess)
+        {
+            // Repository update successful, redirect to the repository details page or perform other actions
+            ToastService.Notify(new(ToastType.Success, $"Repository details saved successfully."));
+            NavigationManager.NavigateTo($"/edit-repository/{Repository.Id}");
+        }
+        else
+        {
+            // Handle the repository update error, display an error message, or perform other actions
+            ToastService.Notify(new(ToastType.Danger, $"Failed to update repository."));
+        }
+    }
+}

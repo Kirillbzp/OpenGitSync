@@ -1,6 +1,6 @@
 ﻿namespace OpenGitSync.Shared.DataTransferObjects
 {
-    public class CreateProjectDto
+    public class ProjectCreateDto
     {
         public string Name { get; set; }
         public string Description { get; set; }

@@ -1,4 +1,5 @@
 ﻿using DB.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DB.Helpers
 {
@@ -6,10 +7,9 @@ namespace DB.Helpers
     {
         Repository GetRepositoryById(long id);
         IEnumerable<Repository> GetRepositoriesByProjectId(long projectId);
-        Repository AddRepository(Repository repository);
         Repository UpdateRepository(Repository repository);
         void DeleteRepository(Repository repository);
-        Repository CreateRepository(string name, string url);
+        Repository CreateRepository(Repository repository);
         IEnumerable<Repository> GetRepositories();
     }
 
@@ -33,16 +33,12 @@ namespace DB.Helpers
             return _dbContext.Repositories.Where(r => r.ProjectId == projectId).ToList();
         }
 
-        public Repository AddRepository(Repository repository)
-        {
-            _dbContext.Repositories.Add(repository);
-
-            return repository;
-        }
-
         public Repository UpdateRepository(Repository repository)
         {
+            repository.UpdatedAt = DateTime.Now;
+
             _dbContext.Repositories.Update(repository);
+            _dbContext.SaveChanges();
 
             return repository;
         }
@@ -50,15 +46,14 @@ namespace DB.Helpers
         public void DeleteRepository(Repository repository)
         {
             _dbContext.Repositories.Remove(repository);
+            _dbContext.SaveChanges();
         }
 
-        public Repository CreateRepository(string name, string url)
+        public Repository CreateRepository(Repository repository)
         {
-            var repository = new Repository
-            {
-                Name = name,
-                Url = url
-            };
+
+            repository.CreatedAt = DateTime.Now;
+            repository.UpdatedAt = DateTime.Now;
 
             _dbContext.Repositories.Add(repository);
             _dbContext.SaveChanges();
@@ -70,6 +65,7 @@ namespace DB.Helpers
         {
             return _dbContext.Repositories.ToList();
         }
+
     }
 
 

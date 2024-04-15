@@ -7,6 +7,7 @@
 @attribute [Authorize]
 @inject NavigationManager NavigationManager
 @inject IProjectService ProjectService
+@inject IRepositoryService RepositoryService
 
 <PageTitle>Edit Project</PageTitle>
 
@@ -36,7 +37,7 @@ else
 
                 <div class="form-group">
                     <label for="description">Description</label>
-                    <textarea id="description" class="form-control" placeholder="Enter project description" @bind="Project.Description"></textarea>
+                    <InputTextArea id="description" class="form-control" placeholder="Enter project description" @bind-Value="Project.Description"></InputTextArea>
                 </div>
 
                 <div class="form-group">
@@ -45,6 +46,40 @@ else
             </div>
         </div>
     </EditForm>
+
+    @if (RepositoryList == null)
+    {
+        <LoadingIndicator LoadingMessage="Loading repositories..." />
+    }
+    else if (RepositoryList.Count == 0)
+    {
+        <p>No repository found.</p>
+    }
+    else
+    {
+        <h4>Repositories</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Url</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var repository in RepositoryList)
+                {
+                    <tr>
+                        <td>@repository.Name</td>
+                        <td>@repository.Url</td>
+                        <td><a href="/edit-repository/@repository.Id">Edit</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <a href="/create-repository/@ProjectId">Create new repository</a>
 }
 
 @code {
@@ -53,11 +88,13 @@ else
     [Inject] protected ToastService ToastService { get; set; } = default!;
     [Parameter] public string ProjectId { get; set; }
     private EditContext editContext;
+    private List<RepositoryDto> RepositoryList { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await LoadProject();
         editContext = new EditContext(Project);
+        await LoadRepositories();
     }
 
     private async Task LoadProject()
@@ -72,6 +109,21 @@ else
         else
         {
             ErrorMessage = "Failed to load project information";
+        }
+    }
+
+    private async Task LoadRepositories()
+    {
+        // Make an API request to retrieve the project by ID
+        var response = await RepositoryService.GetProjectRepositories(ProjectId);
+
+        if (response != null)
+        {
+            RepositoryList = response;
+        }
+        else
+        {
+            ErrorMessage = "Failed to load repositories";
         }
     }
 
