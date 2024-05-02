@@ -1,4 +1,4 @@
-﻿@page "/edit-repository/{RepositoryId}"
+﻿@page "/view-repository/{RepositoryId}"
 @using Microsoft.AspNetCore.Components.Forms
 @using OpenGitSync.Client.Services
 @using OpenGitSync.Client.Shared
@@ -8,9 +8,9 @@
 @inject NavigationManager NavigationManager
 @inject IRepositoryService RepositoryService
 
-<PageTitle>Edit Repository</PageTitle>
+<PageTitle>View Repository</PageTitle>
 
-<h3>Edit Repository</h3>
+<h3>View Repository</h3>
 
 @if (!string.IsNullOrEmpty(ErrorMessage))
 {
@@ -94,7 +94,7 @@ else
         {
             // Repository update successful, redirect to the repository details page or perform other actions
             ToastService.Notify(new(ToastType.Success, $"Repository details saved successfully."));
-            NavigationManager.NavigateTo($"/edit-repository/{Repository.Id}");
+            NavigationManager.NavigateTo($"/view-repository/{Repository.Id}");
         }
         else
         {

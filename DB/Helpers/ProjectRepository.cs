@@ -5,12 +5,12 @@ namespace DB.Helpers
 {
     public interface IProjectRepository
     {
-        IEnumerable<Project> GetProjects();
-        Project GetProjectById(long id);
-        Project CreateProject(Project project);
-        Project UpdateProject(Project project);
-        Project DeleteProject(Project project);
-        IEnumerable<Project> GetProjectsByUserId(string userId);
+        Task<IEnumerable<Project>> GetProjects();
+        Task<Project> GetProjectById(long id);
+        Task<Project> CreateProject(Project project);
+        Task<Project> UpdateProject(Project project);
+        Task<Project> DeleteProject(Project project);
+        Task<IEnumerable<Project>> GetProjectsByUserId(string userId);
     }
 
     public class ProjectRepository : IProjectRepository
@@ -22,44 +22,44 @@ namespace DB.Helpers
             _dbContext = dbContext;
         }
 
-        public IEnumerable<Project> GetProjects()
+        public async Task<IEnumerable<Project>> GetProjects()
         {
-            return _dbContext.Projects.Include(p => p.Repositories);
+            return await _dbContext.Projects.Include(p => p.Repositories).ToListAsync();
         }
 
-        public Project GetProjectById(long id)
+        public async Task<Project> GetProjectById(long id)
         {
-            return _dbContext.Projects.Include(p => p.Repositories).FirstOrDefault(p => p.Id == id);
+            return await _dbContext.Projects.Include(p => p.Repositories).FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public Project CreateProject(Project project)
+        public async Task<Project> CreateProject(Project project)
         {
             project.CreatedAt = DateTime.Now;
             project.UpdatedAt = DateTime.Now;
 
             _dbContext.Projects.Add(project);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
             return project;
         }
 
-        public Project UpdateProject(Project project)
+        public async Task<Project> UpdateProject(Project project)
         {
             project.UpdatedAt = DateTime.Now;
             _dbContext.Projects.Update(project);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
             return project;
         }
 
-        public Project DeleteProject(Project project)
+        public async Task<Project> DeleteProject(Project project)
         {
             _dbContext.Projects.Remove(project);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
             return project;
         }
 
-        public IEnumerable<Project> GetProjectsByUserId(string userId)
+        public async Task<IEnumerable<Project>> GetProjectsByUserId(string userId)
         {
-            return _dbContext.UserProjects.Where(u => u.UserId == userId).Include(p => p.Project).Select(p => p.Project).ToList();
+            return await _dbContext.UserProjects.Where(u => u.UserId == userId).Include(p => p.Project).Select(p => p.Project).ToListAsync();
         }
     }
 

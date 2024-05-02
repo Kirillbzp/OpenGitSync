@@ -17,9 +17,9 @@ namespace OpenGitSync.Server.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetNotifications()
+        public async Task<IActionResult> GetNotifications()
         {
-            var notifications = _notificationService.GetNotificationsByUserId(UserId);
+            var notifications = await _notificationService.GetNotificationsByUserId(UserId);
             return Ok(notifications);
         }
 

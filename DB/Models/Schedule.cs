@@ -1,12 +1,18 @@
 ﻿using DB.Models.Enums;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace DB.Models
 {
     public class Schedule
     {
+        #region General
+
+        [Key]
         public long Id { get; set; }
-        public string Name { get; set; }
+        
+        #endregion
+
+        #region Settings
 
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
@@ -22,5 +28,12 @@ namespace DB.Models
         public long MinimumDeleay { get; set; }
         public long RepeatTaskInterval { get; set; }
 
+        #endregion
+
+        #region Relationships
+
+        public virtual SyncSetting SyncSetting { get; set; }
+
+        #endregion
     }
 }

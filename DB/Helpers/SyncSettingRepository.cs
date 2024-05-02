@@ -1,14 +1,15 @@
 ﻿using DB.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DB.Helpers
 {
     public interface ISyncSettingRepository
     {
-        SyncSetting GetSyncSettingById(long id);
-        IEnumerable<SyncSetting> GetSyncSettingsByProjectId(long projectId);
-        void AddSyncSetting(SyncSetting syncSetting);
-        void UpdateSyncSetting(SyncSetting syncSetting);
-        void DeleteSyncSetting(SyncSetting syncSetting);
+        Task<SyncSetting> GetSyncSettingById(long id);
+        Task<IEnumerable<SyncSetting>> GetSyncSettingsByProjectId(long projectId);
+        Task AddSyncSetting(SyncSetting syncSetting);
+        Task UpdateSyncSetting(SyncSetting syncSetting);
+        Task DeleteSyncSetting(SyncSetting syncSetting);
     }
 
     public class SyncSettingRepository : ISyncSettingRepository
@@ -20,29 +21,36 @@ namespace DB.Helpers
             _dbContext = dbContext;
         }
 
-        public SyncSetting GetSyncSettingById(long id)
+        public async Task<SyncSetting> GetSyncSettingById(long id)
         {
-            return _dbContext.SyncSettings.Find(id);
+            return await _dbContext.SyncSettings.FindAsync(id);
         }
 
-        public IEnumerable<SyncSetting> GetSyncSettingsByProjectId(long projectId)
+        public async Task<IEnumerable<SyncSetting>> GetSyncSettingsByProjectId(long projectId)
         {
-            return _dbContext.SyncSettings.Where(s => s.ProjectId == projectId).ToList();
+            return await _dbContext.SyncSettings.Where(s => s.ProjectId == projectId).ToListAsync();
         }
 
-        public void AddSyncSetting(SyncSetting syncSetting)
+        public async Task AddSyncSetting(SyncSetting syncSetting)
         {
+            var newSchedule = new Schedule();
+            _dbContext.Schedules.Add(newSchedule);
+            syncSetting.Schedule = newSchedule;
+            syncSetting.ScheduleId = newSchedule.Id;
             _dbContext.SyncSettings.Add(syncSetting);
+            await _dbContext.SaveChangesAsync();
         }
 
-        public void UpdateSyncSetting(SyncSetting syncSetting)
+        public async Task UpdateSyncSetting(SyncSetting syncSetting)
         {
             _dbContext.SyncSettings.Update(syncSetting);
+            await _dbContext.SaveChangesAsync();
         }
 
-        public void DeleteSyncSetting(SyncSetting syncSetting)
+        public async Task DeleteSyncSetting(SyncSetting syncSetting)
         {
             _dbContext.SyncSettings.Remove(syncSetting);
+            await _dbContext.SaveChangesAsync();
         }
     }
 

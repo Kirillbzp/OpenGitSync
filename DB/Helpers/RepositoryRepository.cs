@@ -5,12 +5,13 @@ namespace DB.Helpers
 {
     public interface IRepositoryRepository
     {
-        Repository GetRepositoryById(long id);
-        IEnumerable<Repository> GetRepositoriesByProjectId(long projectId);
-        Repository UpdateRepository(Repository repository);
-        void DeleteRepository(Repository repository);
-        Repository CreateRepository(Repository repository);
-        IEnumerable<Repository> GetRepositories();
+        Task<Repository> GetRepositoryById(long id);
+        Task<IEnumerable<Repository>> GetRepositoriesByProjectId(long projectId);
+        Task<Repository> UpdateRepository(Repository repository);
+        Task DeleteRepository(Repository repository);
+        Task<Repository> CreateRepository(Repository repository);
+        Task<IEnumerable<Repository>> GetRepositories();
+        Task<IEnumerable<Repository>> RepositoryTypeahead(string query, long projectId);
     }
 
 
@@ -23,47 +24,52 @@ namespace DB.Helpers
             _dbContext = dbContext;
         }
 
-        public Repository GetRepositoryById(long id)
+        public async Task<Repository> GetRepositoryById(long id)
         {
-            return _dbContext.Repositories.Find(id);
+            return await _dbContext.Repositories.FindAsync(id);
         }
 
-        public IEnumerable<Repository> GetRepositoriesByProjectId(long projectId)
+        public async Task<IEnumerable<Repository>> GetRepositoriesByProjectId(long projectId)
         {
-            return _dbContext.Repositories.Where(r => r.ProjectId == projectId).ToList();
+            return await _dbContext.Repositories.Where(r => r.ProjectId == projectId).ToListAsync();
         }
 
-        public Repository UpdateRepository(Repository repository)
+        public async Task<Repository> UpdateRepository(Repository repository)
         {
             repository.UpdatedAt = DateTime.Now;
 
             _dbContext.Repositories.Update(repository);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
             return repository;
         }
 
-        public void DeleteRepository(Repository repository)
+        public async Task DeleteRepository(Repository repository)
         {
             _dbContext.Repositories.Remove(repository);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
         }
 
-        public Repository CreateRepository(Repository repository)
+        public async Task<Repository> CreateRepository(Repository repository)
         {
 
             repository.CreatedAt = DateTime.Now;
             repository.UpdatedAt = DateTime.Now;
 
             _dbContext.Repositories.Add(repository);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
             return repository;
         }
 
-        public IEnumerable<Repository> GetRepositories()
+        public async Task<IEnumerable<Repository>> GetRepositories()
         {
-            return _dbContext.Repositories.ToList();
+            return await _dbContext.Repositories.ToListAsync();
+        }
+
+        public async Task<IEnumerable<Repository>> RepositoryTypeahead(string query, long projectId)
+        {
+            return await _dbContext.Repositories.Where(r => r.ProjectId == projectId && r.Name.Contains(query)).ToListAsync();
         }
 
     }

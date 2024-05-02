@@ -1,15 +1,16 @@
 ﻿using DB.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DB.Helpers
 {
     public interface IUserProjectRepository
     {
-        UserProject GetUserProjectById(long id);
-        IEnumerable<UserProject> GetUserProjectsByProjectId(long projectId);
-        IEnumerable<UserProject> GetUserProjectsByUserId(string userId);
-        void AddUserProject(UserProject userProject);
-        void UpdateUserProject(UserProject userProject);
-        void DeleteUserProject(UserProject userProject);
+        Task<UserProject> GetUserProjectById(long id);
+        Task<IEnumerable<UserProject>> GetUserProjectsByProjectId(long projectId);
+        Task<IEnumerable<UserProject>> GetUserProjectsByUserId(string userId);
+        Task AddUserProject(UserProject userProject);
+        Task UpdateUserProject(UserProject userProject);
+        Task DeleteUserProject(UserProject userProject);
     }
 
     public class UserProjectRepository : IUserProjectRepository
@@ -21,34 +22,37 @@ namespace DB.Helpers
             _dbContext = dbContext;
         }
 
-        public UserProject GetUserProjectById(long id)
+        public async Task<UserProject> GetUserProjectById(long id)
         {
-            return _dbContext.UserProjects.Find(id);
+            return await _dbContext.UserProjects.FindAsync(id);
         }
 
-        public IEnumerable<UserProject> GetUserProjectsByProjectId(long projectId)
+        public async Task<IEnumerable<UserProject>> GetUserProjectsByProjectId(long projectId)
         {
-            return _dbContext.UserProjects.Where(up => up.ProjectId == projectId).ToList();
+            return await _dbContext.UserProjects.Where(up => up.ProjectId == projectId).ToListAsync();
         }
 
-        public IEnumerable<UserProject> GetUserProjectsByUserId(string userId)
+        public async Task<IEnumerable<UserProject>> GetUserProjectsByUserId(string userId)
         {
-            return _dbContext.UserProjects.Where(up => up.UserId == userId).ToList();
+            return await _dbContext.UserProjects.Where(up => up.UserId == userId).ToListAsync();
         }
 
-        public void AddUserProject(UserProject userProject)
+        public async Task AddUserProject(UserProject userProject)
         {
             _dbContext.UserProjects.Add(userProject);
+            await _dbContext.SaveChangesAsync();
         }
 
-        public void UpdateUserProject(UserProject userProject)
+        public async Task UpdateUserProject(UserProject userProject)
         {
             _dbContext.UserProjects.Update(userProject);
+            await _dbContext.SaveChangesAsync();
         }
 
-        public void DeleteUserProject(UserProject userProject)
+        public async Task DeleteUserProject(UserProject userProject)
         {
             _dbContext.UserProjects.Remove(userProject);
+            await _dbContext.SaveChangesAsync();
         }
     }
 

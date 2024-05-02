@@ -4,6 +4,7 @@ using DB;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DB.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240415214046_SyncSettings")]
+    partial class SyncSettings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -110,6 +113,10 @@ namespace DB.Migrations
                     b.Property<long>("MinimumDeleay")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("OnFriday")
                         .HasColumnType("bit");
 
@@ -137,9 +144,17 @@ namespace DB.Migrations
                     b.Property<TimeSpan>("StartTime")
                         .HasColumnType("time");
 
+                    b.Property<long>("SyncSettingId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("SyngSettingsId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Schedules");
+                    b.HasIndex("SyngSettingsId");
+
+                    b.ToTable("Schedule");
                 });
 
             modelBuilder.Entity("DB.Models.SyncSetting", b =>
@@ -188,8 +203,7 @@ namespace DB.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.HasIndex("ScheduleId")
-                        .IsUnique();
+                    b.HasIndex("ScheduleId");
 
                     b.HasIndex("SourceRepositoryId")
                         .IsUnique();
@@ -614,6 +628,17 @@ namespace DB.Migrations
                     b.Navigation("Project");
                 });
 
+            modelBuilder.Entity("DB.Models.Schedule", b =>
+                {
+                    b.HasOne("DB.Models.SyncSetting", "SyncSetting")
+                        .WithMany()
+                        .HasForeignKey("SyngSettingsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SyncSetting");
+                });
+
             modelBuilder.Entity("DB.Models.SyncSetting", b =>
                 {
                     b.HasOne("DB.Models.Project", "Project")
@@ -623,9 +648,9 @@ namespace DB.Migrations
                         .IsRequired();
 
                     b.HasOne("DB.Models.Schedule", "Schedule")
-                        .WithOne("SyncSetting")
-                        .HasForeignKey("DB.Models.SyncSetting", "ScheduleId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .WithMany()
+                        .HasForeignKey("ScheduleId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("DB.Models.Repository", "SourceRepository")
@@ -737,12 +762,6 @@ namespace DB.Migrations
                     b.Navigation("SyncSettings");
 
                     b.Navigation("UserProjects");
-                });
-
-            modelBuilder.Entity("DB.Models.Schedule", b =>
-                {
-                    b.Navigation("SyncSetting")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("DB.Models.User", b =>

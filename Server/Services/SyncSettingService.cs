@@ -1,16 +1,15 @@
 ﻿using DB.Helpers;
 using DB.Models;
-using OpenGitSync.Shared.DataTransferObjects;
 
 namespace OpenGitSync.Server.Services
 {
     public interface ISyncSettingService
     {
-        SyncSetting GetSyncSettingById(long id);
-        IEnumerable<SyncSetting> GetSyncSettingsByProjectId(long projectId);
-        void CreateSyncSetting(SyncSetting syncSetting);
-        void UpdateSyncSetting(SyncSetting syncSetting);
-        void DeleteSyncSetting(SyncSetting syncSetting);
+        Task<SyncSetting> GetSyncSettingById(long id);
+        Task<IEnumerable<SyncSetting>> GetSyncSettingsByProjectId(long projectId);
+        Task CreateSyncSetting(SyncSetting syncSetting);
+        Task UpdateSyncSetting(SyncSetting syncSetting);
+        Task DeleteSyncSetting(SyncSetting syncSetting);
     }
 
     public class SyncSettingService : ISyncSettingService
@@ -22,29 +21,29 @@ namespace OpenGitSync.Server.Services
             _syncSettingRepository = syncSettingRepository;
         }
 
-        public SyncSetting GetSyncSettingById(long id)
+        public async Task<SyncSetting> GetSyncSettingById(long id)
         {
-            return _syncSettingRepository.GetSyncSettingById(id);
+            return await _syncSettingRepository.GetSyncSettingById(id);
         }
 
-        public IEnumerable<SyncSetting> GetSyncSettingsByProjectId(long projectId)
+        public async Task<IEnumerable<SyncSetting>> GetSyncSettingsByProjectId(long projectId)
         {
-            return _syncSettingRepository.GetSyncSettingsByProjectId(projectId);
+            return await _syncSettingRepository.GetSyncSettingsByProjectId(projectId);
         }
 
-        public void CreateSyncSetting(SyncSetting syncSetting)
+        public async Task CreateSyncSetting(SyncSetting syncSetting)
         {
-            _syncSettingRepository.AddSyncSetting(syncSetting);
+            await _syncSettingRepository.AddSyncSetting(syncSetting);
         }
 
-        public void UpdateSyncSetting(SyncSetting syncSetting)
+        public async Task UpdateSyncSetting(SyncSetting syncSetting)
         {
-            _syncSettingRepository.UpdateSyncSetting(syncSetting);
+            await _syncSettingRepository.UpdateSyncSetting(syncSetting);
         }
 
-        public void DeleteSyncSetting(SyncSetting syncSetting)
+        public async Task DeleteSyncSetting(SyncSetting syncSetting)
         {
-            _syncSettingRepository.DeleteSyncSetting(syncSetting);
+            await _syncSettingRepository.DeleteSyncSetting(syncSetting);
         }
 
     }

@@ -1,12 +1,13 @@
-﻿using OpenGitSync.Server.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using OpenGitSync.Server.Models;
 
 namespace DB.Helpers
 {
     public interface INotificationRepository
     {
-        IEnumerable<Notification> GetNotificationsByUserId(string userId);
-        Notification GetNotificationById(long notificationId);
-        void UpdateNotification(Notification notification);
+        Task<IEnumerable<Notification>> GetNotificationsByUserId(string userId);
+        Task<Notification> GetNotificationById(long notificationId);
+        Task UpdateNotification(Notification notification);
         // Other methods as needed: CreateNotification, DeleteNotification, etc.
     }
 
@@ -19,20 +20,20 @@ namespace DB.Helpers
             _dbContext = dbContext;
         }
 
-        public IEnumerable<Notification> GetNotificationsByUserId(string userId)
+        public async Task<IEnumerable<Notification>> GetNotificationsByUserId(string userId)
         {
-            return _dbContext.Notifications.Where(n => n.UserId == userId);
+            return await _dbContext.Notifications.Where(n => n.UserId == userId).ToListAsync();
         }
 
-        public Notification GetNotificationById(long notificationId)
+        public async Task<Notification> GetNotificationById(long notificationId)
         {
-            return _dbContext.Notifications.FirstOrDefault(n => n.Id == notificationId);
+            return await _dbContext.Notifications.FirstOrDefaultAsync(n => n.Id == notificationId);
         }
 
-        public void UpdateNotification(Notification notification)
+        public async Task UpdateNotification(Notification notification)
         {
             _dbContext.Notifications.Update(notification);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
         }
 
         // Implement other methods as needed: CreateNotification, DeleteNotification, etc.

@@ -22,9 +22,9 @@ namespace OpenGitSync.Server.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<SyncSettingDto> GetSyncSettingById(long id)
+        public async Task<ActionResult<SyncSettingDto>> GetSyncSettingById(long id)
         {
-            var syncSetting = _syncSettingService.GetSyncSettingById(id);
+            var syncSetting = await _syncSettingService.GetSyncSettingById(id);
             if (syncSetting == null)
                 return NotFound(new { Error = "Sync setting not found" });
 
@@ -33,43 +33,43 @@ namespace OpenGitSync.Server.Controllers
         }
 
         [HttpGet("project/{projectId}")]
-        public ActionResult<IEnumerable<SyncSettingDto>> GetSyncSettingsByProjectId(long projectId)
+        public async Task<ActionResult<IEnumerable<SyncSettingDto>>> GetSyncSettingsByProjectId(long projectId)
         {
-            var syncSettings = _syncSettingService.GetSyncSettingsByProjectId(projectId);
+            var syncSettings = await _syncSettingService.GetSyncSettingsByProjectId(projectId);
             var syncSettingDtos = _mapper.Map<IEnumerable<SyncSettingDto>>(syncSettings);
             return Ok(syncSettingDtos);
         }
 
         [HttpPost]
-        public ActionResult<SyncSettingDto> CreateSyncSetting(SyncSettingCreateDto createDto)
+        public async Task<ActionResult<SyncSettingDto>> CreateSyncSetting(SyncSettingCreateDto createDto)
         {
             var syncSetting = _mapper.Map<SyncSetting>(createDto);
-            _syncSettingService.CreateSyncSetting(syncSetting);
+            await _syncSettingService.CreateSyncSetting(syncSetting);
             var syncSettingDto = _mapper.Map<SyncSettingDto>(syncSetting);
             return CreatedAtAction(nameof(GetSyncSettingById), new { id = syncSetting.Id }, syncSettingDto);
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateSyncSetting(long id, SyncSettingUpdateDto updateDto)
+        public async Task<IActionResult> UpdateSyncSetting(long id, SyncSettingUpdateDto updateDto)
         {
-            var syncSetting = _syncSettingService.GetSyncSettingById(id);
+            var syncSetting = await _syncSettingService.GetSyncSettingById(id);
             if (syncSetting == null)
                 return NotFound(new { Error = "Sync setting not found" });
 
             _mapper.Map(updateDto, syncSetting);
-            _syncSettingService.UpdateSyncSetting(syncSetting);
+            await _syncSettingService.UpdateSyncSetting(syncSetting);
 
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteSyncSetting(long id)
+        public async Task<IActionResult> DeleteSyncSetting(long id)
         {
-            var syncSetting = _syncSettingService.GetSyncSettingById(id);
+            var syncSetting = await _syncSettingService.GetSyncSettingById(id);
             if (syncSetting == null)
                 return NotFound(new { Error = "Sync setting not found" });
 
-            _syncSettingService.DeleteSyncSetting(syncSetting);
+            await _syncSettingService.DeleteSyncSetting(syncSetting);
 
             return NoContent();
         }

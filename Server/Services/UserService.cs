@@ -16,11 +16,11 @@ namespace OpenGitSync.Server.Services
     {
         Task<IdentityResult> RegisterUserAsync(UserRegistrationDto registrationDto);
         Task<LoginResult> LoginAsync(UserLoginDto loginDto);
-        UserDto GetUserById(string userId);
-        void UpdateUser(UserDto userDto);
-        bool ValidateUserPassword(UserDto userDto, string password);
+        Task<UserDto> GetUserById(string userId);
+        Task UpdateUser(UserDto userDto);
+        Task<bool> ValidateUserPassword(UserDto userDto, string password);
         string HashPassword(string password);
-        IEnumerable<ProjectDto> GetUserProjects(string userId);
+        Task<IEnumerable<ProjectDto>> GetUserProjects(string userId);
     }
 
     public class UserService : IUserService
@@ -118,9 +118,9 @@ namespace OpenGitSync.Server.Services
         }
 
         
-        public UserDto GetUserById(string userId)
+        public async Task<UserDto> GetUserById(string userId)
         {
-            var user = _userRepository.GetUserById(userId);
+            var user = await _userRepository.GetUserById(userId);
             if (user == null)
                 return null;
 
@@ -136,9 +136,9 @@ namespace OpenGitSync.Server.Services
             return userDto;
         }
 
-        public void UpdateUser(UserDto userDto)
+        public async Task UpdateUser(UserDto userDto)
         {
-            var user = _userRepository.GetUserById(userDto.Id);
+            var user = await _userRepository.GetUserById(userDto.Id);
             if (user == null)
                 return;
 
@@ -147,13 +147,13 @@ namespace OpenGitSync.Server.Services
             user.Email = userDto.Email;
             // Update other properties as needed
 
-            _userRepository.UpdateUser(user);
+            await _userRepository.UpdateUser(user);
         }
 
-        public bool ValidateUserPassword(UserDto userDto, string password)
+        public async Task<bool> ValidateUserPassword(UserDto userDto, string password)
         {
             // Retrieve the user entity by the userDto.Id
-            var user = _userRepository.GetUserById(userDto.Id);
+            var user = await _userRepository.GetUserById(userDto.Id);
             if (user == null)
                 return false;
 
@@ -170,9 +170,9 @@ namespace OpenGitSync.Server.Services
             return hashedPassword;
         }
 
-        public IEnumerable<ProjectDto> GetUserProjects(string userId)
+        public async Task<IEnumerable<ProjectDto>> GetUserProjects(string userId)
         {
-            var projects = _projectRepository.GetProjectsByUserId(userId);
+            var projects = await _projectRepository.GetProjectsByUserId(userId);
             if (projects == null)
                 return null;
 

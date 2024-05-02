@@ -7,12 +7,13 @@ namespace OpenGitSync.Server.Services
 {
     public interface IRepositoryService
     {
-        IEnumerable<RepositoryDto> GetRepositories();
-        IEnumerable<RepositoryDto> GetRepositoriesByProject(long projectId);
-        RepositoryDto GetRepositoryById(long id);
-        RepositoryDto CreateRepository(RepositoryCreateDto repositoryDto);
-        RepositoryDto UpdateRepository(long id, RepositoryDto repositoryDto);
-        RepositoryDto DeleteRepository(long id);
+        Task<IEnumerable<RepositoryDto>> GetRepositories();
+        Task<IEnumerable<RepositoryDto>> GetRepositoriesByProject(long projectId);
+        Task<RepositoryDto> GetRepositoryById(long id);
+        Task<RepositoryDto> CreateRepository(RepositoryCreateDto repositoryDto);
+        Task<RepositoryDto> UpdateRepository(long id, RepositoryDto repositoryDto);
+        Task<RepositoryDto> DeleteRepository(long id);
+        Task<IEnumerable<RepositoryDto>> RepositoryTypeahead(string query, long projectId);
     }
 
     public class RepositoryService : IRepositoryService
@@ -26,63 +27,70 @@ namespace OpenGitSync.Server.Services
             _mapper = mapper;
         }
 
-        public IEnumerable<RepositoryDto> GetRepositories()
+        public async Task<IEnumerable<RepositoryDto>> GetRepositories()
         {
-            var repositories = _unitOfWork.RepositoryRepository.GetRepositories();
+            var repositories = await _unitOfWork.RepositoryRepository.GetRepositories();
             var repositoryDtos = _mapper.Map<IEnumerable<RepositoryDto>>(repositories);
             return repositoryDtos;
         }
 
-        public RepositoryDto GetRepositoryById(long id)
+        public async Task<RepositoryDto> GetRepositoryById(long id)
         {
-            var repository = _unitOfWork.RepositoryRepository.GetRepositoryById(id);
+            var repository = await _unitOfWork.RepositoryRepository.GetRepositoryById(id);
             var repositoryDto = _mapper.Map<RepositoryDto>(repository);
             return repositoryDto;
         }
 
-        public IEnumerable<RepositoryDto> GetRepositoriesByProject(long projectId)
+        public async Task<IEnumerable<RepositoryDto>> GetRepositoriesByProject(long projectId)
         {
-            var repositories = _unitOfWork.RepositoryRepository.GetRepositoriesByProjectId(projectId);
+            var repositories = await _unitOfWork.RepositoryRepository.GetRepositoriesByProjectId(projectId);
             var repositoryDtos = _mapper.Map<IEnumerable<RepositoryDto>>(repositories);
             return repositoryDtos;
         }
 
-        public RepositoryDto CreateRepository(RepositoryCreateDto repositoryDto)
+        public async Task<RepositoryDto> CreateRepository(RepositoryCreateDto repositoryDto)
         {
             var repository = _mapper.Map<Repository>(repositoryDto);
-            var createdRepository = _unitOfWork.RepositoryRepository.CreateRepository(repository);
-            _unitOfWork.SaveChanges();
+            var createdRepository = await _unitOfWork.RepositoryRepository.CreateRepository(repository);
+            await _unitOfWork.SaveChanges();
             var createdRepositoryDto = _mapper.Map<RepositoryDto>(createdRepository);
             return createdRepositoryDto;
         }
 
-        public RepositoryDto UpdateRepository(long id, RepositoryDto repositoryDto)
+        public async Task<RepositoryDto> UpdateRepository(long id, RepositoryDto repositoryDto)
         {
-            var existingRepository = _unitOfWork.RepositoryRepository.GetRepositoryById(id);
+            var existingRepository = await _unitOfWork.RepositoryRepository.GetRepositoryById(id);
 
             if (existingRepository == null)
                 return null;
 
             _mapper.Map(repositoryDto, existingRepository);
-            var updatedRepository = _unitOfWork.RepositoryRepository.UpdateRepository(existingRepository);
+            var updatedRepository = await _unitOfWork.RepositoryRepository.UpdateRepository(existingRepository);
             _unitOfWork.SaveChanges();
             var updatedRepositoryDto = _mapper.Map<RepositoryDto>(updatedRepository);
             return updatedRepositoryDto;
         }
 
-        public RepositoryDto DeleteRepository(long id)
+        public async Task<RepositoryDto> DeleteRepository(long id)
         {
-            var existingRepository = _unitOfWork.RepositoryRepository.GetRepositoryById(id);
+            var existingRepository = await _unitOfWork.RepositoryRepository.GetRepositoryById(id);
 
             if (existingRepository == null)
                 return null;
 
             var deletedRepositoryDto = _mapper.Map<RepositoryDto>(existingRepository);
 
-            _unitOfWork.RepositoryRepository.DeleteRepository(existingRepository);
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.RepositoryRepository.DeleteRepository(existingRepository);
+            await _unitOfWork.SaveChanges();
             
             return deletedRepositoryDto;
+        }
+
+        public async Task<IEnumerable<RepositoryDto>> RepositoryTypeahead(string query, long projectId)
+        {
+            var repositories = await _unitOfWork.RepositoryRepository.RepositoryTypeahead(query, projectId);
+            var repositoryDtos = _mapper.Map<IEnumerable<RepositoryDto>>(repositories);
+            return repositoryDtos;
         }
     }
 

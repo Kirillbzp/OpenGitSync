@@ -18,6 +18,7 @@ namespace DB
         public DbSet<Project> Projects { get; set; }
         public DbSet<Repository> Repositories { get; set; }
         public DbSet<SyncSetting> SyncSettings { get; set; }
+        public DbSet<Schedule> Schedules { get; set; }
         public DbSet<UserProject> UserProjects { get; set; }
         public DbSet<Notification> Notifications { get; set; }        
 
@@ -49,6 +50,12 @@ namespace DB
                 .HasOne(ss => ss.TargetRepository)
                 .WithOne()
                 .HasForeignKey<SyncSetting>(fc => fc.TargetRepositoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Schedule>()
+                .HasOne(ss => ss.SyncSetting)
+                .WithOne(sc => sc.Schedule)
+                .HasForeignKey<SyncSetting>(ss => ss.ScheduleId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

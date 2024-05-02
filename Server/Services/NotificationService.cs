@@ -5,7 +5,7 @@ namespace OpenGitSync.Server.Services
 {
     public interface INotificationService
     {
-        IEnumerable<NotificationDto> GetNotificationsByUserId(string userId);
+        Task<IEnumerable<NotificationDto>> GetNotificationsByUserId(string userId);
         Task<bool> MarkNotificationAsRead(string userId, long notificationId);
         // Other methods as needed: CreateNotification, DeleteNotification, etc.
     }
@@ -20,9 +20,9 @@ namespace OpenGitSync.Server.Services
             _notificationRepository = notificationRepository;
         }
 
-        public IEnumerable<NotificationDto> GetNotificationsByUserId(string userId)
+        public async Task<IEnumerable<NotificationDto>> GetNotificationsByUserId(string userId)
         {
-            var notifications = _notificationRepository.GetNotificationsByUserId(userId);
+            var notifications = await  _notificationRepository.GetNotificationsByUserId(userId);
             var notificationDtos = notifications.Select(n => new NotificationDto
             {
                 Id = n.Id,
@@ -37,7 +37,7 @@ namespace OpenGitSync.Server.Services
 
         public async Task<bool> MarkNotificationAsRead(string userId, long notificationId)
         {
-            var notification = _notificationRepository.GetNotificationById(notificationId);
+            var notification = await _notificationRepository.GetNotificationById(notificationId);
             if (notification != null && notification.UserId == userId)
             {
                 notification.IsRead = true;

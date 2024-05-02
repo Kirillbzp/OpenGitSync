@@ -1,14 +1,15 @@
 ﻿using DB.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DB.Helpers
 {
     public interface IUserRepository
     {
-        User GetUserById(string id);
-        User GetUserByEmail(string email);
-        void AddUser(User user);
-        void UpdateUser(User user);
-        void DeleteUser(User user);
+        Task<User> GetUserById(string id);
+        Task<User> GetUserByEmail(string email);
+        Task AddUser(User user);
+        Task UpdateUser(User user);
+        Task DeleteUser(User user);
     }
 
     public class UserRepository : IUserRepository
@@ -20,29 +21,32 @@ namespace DB.Helpers
             _dbContext = dbContext;
         }
 
-        public User GetUserById(string id)
+        public async Task<User> GetUserById(string id)
         {
-            return _dbContext.Users.Find(id);
+            return await _dbContext.Users.FindAsync(id);
         }
 
-        public User GetUserByEmail(string email)
+        public async Task<User> GetUserByEmail(string email)
         {
-            return _dbContext.Users.FirstOrDefault(u => u.Email == email);
+            return await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
 
-        public void AddUser(User user)
+        public async Task AddUser(User user)
         {
             _dbContext.Users.Add(user);
+            await _dbContext.SaveChangesAsync();
         }
 
-        public void UpdateUser(User user)
+        public async Task UpdateUser(User user)
         {
             _dbContext.Users.Update(user);
+            await _dbContext.SaveChangesAsync();
         }
 
-        public void DeleteUser(User user)
+        public async Task DeleteUser(User user)
         {
             _dbContext.Users.Remove(user);
+            await _dbContext.SaveChangesAsync();
         }
     }
 

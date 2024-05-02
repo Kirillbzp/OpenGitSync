@@ -22,10 +22,10 @@ namespace OpenGitSync.Server.Controllers
         }
 
         [HttpGet("profile")]
-        public IActionResult GetUserProfile()
+        public async Task<IActionResult> GetUserProfile()
         {
             // Retrieve the user from the service
-            var user = _userService.GetUserById(UserId);
+            var user = await _userService.GetUserById(UserId);
 
             if (user == null)
                 return NotFound(new { Error = "User not found" });
@@ -79,10 +79,10 @@ namespace OpenGitSync.Server.Controllers
         }
 
         [HttpPut("profile")]
-        public IActionResult UpdateProfile(UserProfileDto profileDto)
+        public async Task<IActionResult> UpdateProfile(UserProfileDto profileDto)
         {
             // Retrieve the user from the database
-            var user = _userService.GetUserById(UserId);
+            var user = await _userService.GetUserById(UserId);
 
             if (user == null)
                 return NotFound(new { Error = "User not found" });
@@ -121,10 +121,10 @@ namespace OpenGitSync.Server.Controllers
         }
 
         [HttpGet("{userId}/projects")]
-        public IActionResult GetUserProjects(string userId)
+        public async Task<IActionResult> GetUserProjects(string userId)
         {
             // Retrieve the user projects from the service
-            var projects = _userService.GetUserProjects(userId);
+            var projects = await _userService.GetUserProjects(userId);
 
             if (projects == null)
                 return NotFound(new { Error = "User not found" });

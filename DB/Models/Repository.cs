@@ -12,6 +12,8 @@ namespace DB.Models
             RepositoryType = RepositoryType.Git;
         }
 
+        #region General
+
         [Key]
         public long Id { get; set; }
         [Required]
@@ -21,11 +23,16 @@ namespace DB.Models
         public string Key { get; set; }
         public RepositoryType RepositoryType { get; set; }
 
-        // Relationships
+        #endregion
+
+        #region Relationships
+
         public long ProjectId { get; set; }
         [ForeignKey("ProjectId")]
         public Project Project { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+
+        #endregion
     }
 }

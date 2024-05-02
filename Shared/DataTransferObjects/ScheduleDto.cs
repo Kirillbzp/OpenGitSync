@@ -5,8 +5,7 @@ namespace OpenGitSync.Shared.DataTransferObjects
     public class ScheduleDto
     {
         public long Id { get; set; }
-        public string Name { get; set; }
-
+        
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
         public IntervalType IntervalType { get; set; }
@@ -20,5 +19,7 @@ namespace OpenGitSync.Shared.DataTransferObjects
         public bool OnSaturday { get; set; }
         public long MinimumDeleay { get; set; }
         public long RepeatTaskInterval { get; set; }
+
+        public long SyncSettingId { get; set; }
     }
 }

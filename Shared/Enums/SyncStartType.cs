@@ -2,7 +2,7 @@
 {
     public enum SyncStartTypes
     {
-        Manually,
+        Manual,
         Schedule
     }
 }

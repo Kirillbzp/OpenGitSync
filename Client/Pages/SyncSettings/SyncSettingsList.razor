@@ -1,0 +1,53 @@
+﻿@using OpenGitSync.Client.Services
+@using OpenGitSync.Shared.DataTransferObjects
+@inject NavigationManager NavigationManager
+@inject ISyncSettingsService SyncSettingsService
+
+<button class="btn btn-primary" @onclick="@( () => NavigationManager.NavigateTo($"/create-sync-setting/{@ProjectId}") )">Create new Sync setting</button>
+<br />
+<br />
+
+<Grid TItem="SyncSettingDto"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="SyncSettingsDataProvider"
+      EmptyText="No sync settings found."
+      ItemsPerPageText="Projects per page"
+      PageSizeSelectorItems=@(new int[] { 10, 20, 50 })
+      PaginationItemsTextFormat="{0} - {1} of {2} projects">
+
+    <GridColumn TItem="SyncSettingDto" HeaderText="">
+        <button class="btn btn-primary" @onclick="@( () => NavigationManager.NavigateTo($"/view-sync-setting/{context.Id}") )">View</button>
+    </GridColumn>
+    <GridColumn TItem="SyncSettingDto" HeaderText="Name">
+        @context.Name
+    </GridColumn>
+
+</Grid>
+
+@code {
+    [Parameter] public string ProjectId { get; set; }
+    private IEnumerable<SyncSettingDto> SyncSettings { get; set; }
+
+    private async Task<GridDataProviderResult<SyncSettingDto>> SyncSettingsDataProvider(GridDataProviderRequest<SyncSettingDto> request)
+    {
+        // PreloadService.Show(SpinnerColor.Light, "Loading projects...");
+
+        if (SyncSettings is null)
+        {
+            // Make an API request to retrieve sync settings by project ID
+            var response = await SyncSettingsService.GetProjectSyncSettings(ProjectId);
+
+            if (response != null)
+            {
+                SyncSettings = response;
+            }
+            else
+            {
+                // ErrorMessage = "Failed to load sync settings";
+            }
+        }
+
+        // PreloadService.Hide();
+        return await Task.FromResult(request.ApplyTo(SyncSettings));
+    }
+}

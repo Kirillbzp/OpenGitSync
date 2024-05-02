@@ -6,10 +6,10 @@ namespace OpenGitSync.Server.Services
 {
     public interface IUserProjectService
     {
-        UserProject GetUserProjectById(long id);
-        IEnumerable<UserProject> GetUserProjectsByProjectId(long projectId);
-        void AddUserToProject(UserProject userProject);
-        void RemoveUserFromProject(UserProject userProject);
+        Task<UserProject> GetUserProjectById(long id);
+        Task<IEnumerable<UserProject>> GetUserProjectsByProjectId(long projectId);
+        Task AddUserToProject(UserProject userProject);
+        Task RemoveUserFromProject(UserProject userProject);
     }
 
     public class UserProjectService : IUserProjectService
@@ -21,24 +21,24 @@ namespace OpenGitSync.Server.Services
             _userProjectRepository = userProjectRepository;
         }
 
-        public UserProject GetUserProjectById(long id)
+        public async Task<UserProject> GetUserProjectById(long id)
         {
-            return _userProjectRepository.GetUserProjectById(id);
+            return await _userProjectRepository.GetUserProjectById(id);
         }
 
-        public IEnumerable<UserProject> GetUserProjectsByProjectId(long projectId)
+        public async Task<IEnumerable<UserProject>> GetUserProjectsByProjectId(long projectId)
         {
-            return _userProjectRepository.GetUserProjectsByProjectId(projectId);
+            return await _userProjectRepository.GetUserProjectsByProjectId(projectId);
         }
 
-        public void AddUserToProject(UserProject userProject)
+        public async Task AddUserToProject(UserProject userProject)
         {
-            _userProjectRepository.AddUserProject(userProject);
+            await _userProjectRepository.AddUserProject(userProject);
         }
 
-        public void RemoveUserFromProject(UserProject userProject)
+        public async Task RemoveUserFromProject(UserProject userProject)
         {
-            _userProjectRepository.DeleteUserProject(userProject);
+            await _userProjectRepository.DeleteUserProject(userProject);
         }
 
     }

@@ -1,0 +1,84 @@
+﻿@page "/view-sync-setting/{SyncSettingId}"
+@using Microsoft.AspNetCore.Components.Forms
+@using OpenGitSync.Client.Services
+@using OpenGitSync.Shared.DataTransferObjects;
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize]
+@inject NavigationManager NavigationManager
+@inject ISyncSettingsService SyncSettingsService
+
+<PageTitle>View Sync Setting</PageTitle>
+
+<h3>View Sync Setting</h3>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger">@ErrorMessage</div>
+}
+
+<EditForm EditContext="editContext" OnValidSubmit="HandleUpdateSyncSetting">
+        <DataAnnotationsValidator />
+
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Sync Setting Information</h5>
+
+                <div class="form-group">
+                    <label for="name">Name</label>
+                <InputText type="text" id="name" class="form-control" placeholder="Enter Sync Setting name" @bind-Value="SyncSetting.Name" />
+                    <ValidationMessage For="@(() => SyncSetting.Name)" />
+                </div>
+
+                <div class="form-group">
+                <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </EditForm>
+
+@code {
+    private SyncSettingDto SyncSetting { get; set; }
+    private string ErrorMessage { get; set; }
+    [Parameter] public string SyncSettingId { get; set; }
+    [Inject] protected ToastService ToastService { get; set; } = default!;
+    private EditContext editContext;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSyncSetting();
+        editContext = new EditContext(SyncSetting);
+    }
+
+    private async Task LoadSyncSetting()
+    {
+        // Make an API request to retrieve the Sync Setting by ID
+        var response = await SyncSettingsService.GetSyncSettingById(SyncSettingId);
+
+        if (response != null)
+        {
+            SyncSetting = response;
+        }
+        else
+        {
+            ErrorMessage = "Failed to load Sync Setting information";
+        }
+    }
+
+    private async Task HandleUpdateSyncSetting()
+    {
+        // Make an API request to create the Sync Setting
+        var isSuccess = await SyncSettingsService.UpdateSyncSetting(SyncSetting.Id, SyncSetting); ;
+
+        if (isSuccess)
+        {
+            // Sync Setting creation successful, redirect to the Sync Setting details page or perform other actions
+            ToastService.Notify(new(ToastType.Success, $"Sync Setting created successfully."));
+            NavigationManager.NavigateTo($"/view-sync-setting/{SyncSetting.Id}");
+        }
+        else
+        {
+            // Handle the Sync Setting creation error, display an error message, or perform other actions
+            ToastService.Notify(new(ToastType.Danger, $"Failed to create Sync Setting."));
+        }
+    }
+}

@@ -1,0 +1,55 @@
+﻿@page "/projects"
+@using OpenGitSync.Client.Services
+@using OpenGitSync.Client.Shared
+@using OpenGitSync.Shared.DataTransferObjects;
+@using Microsoft.AspNetCore.Authorization;
+@inject IProjectService ProjectService
+@inject NavigationManager NavigationManager
+
+@attribute [Authorize]
+
+<PageTitle>Projects</PageTitle>
+
+<h3>Projects</h3>
+
+<button class="btn btn-primary" @onclick="@( () => NavigationManager.NavigateTo($"/create-project") )">Create new project</button>
+<br /><br />
+<Grid TItem="ProjectDto"
+    Class="table table-hover table-bordered table-striped"
+    DataProvider="ProjectsDataProvider"
+    EmptyText="No projects found."
+    ItemsPerPageText="Projects per page"
+    PageSizeSelectorItems=@(new int[] { 10, 20, 50 })
+    PaginationItemsTextFormat="{0} - {1} of {2} projects">
+        
+    <GridColumn TItem="ProjectDto" HeaderText="">
+        <button class="btn btn-primary" @onclick="@( () => NavigationManager.NavigateTo($"/view-project/{@context.Id}") )">View</button>
+    </GridColumn>
+    <GridColumn TItem="ProjectDto" HeaderText="Name">
+        @context.Name
+    </GridColumn>
+    <GridColumn TItem="ProjectDto" HeaderText="Description">
+        @context.Description
+    </GridColumn>
+
+</Grid>
+
+@code {
+    [Inject] protected PreloadService PreloadService { get; set; }
+
+    private IEnumerable<ProjectDto> ProjectsList { get; set; }
+    
+    private async Task<GridDataProviderResult<ProjectDto>> ProjectsDataProvider(GridDataProviderRequest<ProjectDto> request)
+    {
+        PreloadService.Show(SpinnerColor.Light, "Loading projects...");
+        
+        if (ProjectsList is null)
+        {
+            ProjectsList = await ProjectService.GetProjects();
+        }
+
+        PreloadService.Hide();
+        return await Task.FromResult(request.ApplyTo(ProjectsList));
+    }
+
+}

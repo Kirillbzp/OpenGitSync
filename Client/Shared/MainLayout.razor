@@ -35,6 +35,7 @@
     </main>
 
     <Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight" />
+    <Preload LoadingText="Loading..." />
 </div>
 
 @code {
@@ -42,8 +43,8 @@
     private string userName = "";
 
     //private AuthenticationStateProvider AuthenticationStateProvider = default!;
-    private Sidebar sidebar = default!;
-    private IEnumerable<NavItem> navItems = default!;
+    private Sidebar sidebar;
+    private IEnumerable<NavItem> navItems;
 
     protected override async Task OnInitializedAsync()
     {

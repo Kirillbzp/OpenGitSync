@@ -18,16 +18,16 @@ namespace OpenGitSync.Server.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetProjects()
+        public async Task<IActionResult> GetProjects()
         {
-            var projects = _projectService.GetProjects();
+            var projects = await _projectService.GetProjects();
             return Ok(projects);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetProject(long id)
+        public async Task<IActionResult> GetProject(long id)
         {
-            var project = _projectService.GetProjectById(id);
+            var project = await _projectService.GetProjectById(id);
 
             if (project == null)
                 return NotFound(new { Error = "Project not found" });
@@ -36,17 +36,17 @@ namespace OpenGitSync.Server.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateProject(ProjectCreateDto projectDto)
+        public async Task<IActionResult> CreateProject(ProjectCreateDto projectDto)
         {
-            var createdProject = _projectService.CreateProject(projectDto);
+            var createdProject = await _projectService.CreateProject(projectDto);
 
             return CreatedAtAction(nameof(GetProject), new { id = createdProject.Id }, createdProject);
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateProject(long id, ProjectDto projectDto)
+        public async Task<IActionResult> UpdateProject(long id, ProjectDto projectDto)
         {
-            var updatedProject = _projectService.UpdateProject(id, projectDto);
+            var updatedProject = await _projectService.UpdateProject(id, projectDto);
 
             if (updatedProject == null)
                 return NotFound(new { Error = "Project not found" });
@@ -55,9 +55,9 @@ namespace OpenGitSync.Server.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteProject(long id)
+        public async Task<IActionResult> DeleteProject(long id)
         {
-            var deletedProject = _projectService.DeleteProject(id);
+            var deletedProject = await _projectService.DeleteProject(id);
 
             if (deletedProject == null)
                 return NotFound(new { Error = "Project not found" });
@@ -66,10 +66,10 @@ namespace OpenGitSync.Server.Controllers
         }
 
         [HttpGet("{projectId}/sync-settings")]
-        public IActionResult GetProjectSyncSettings(long projectId)
+        public async Task<IActionResult> GetProjectSyncSettings(long projectId)
         {
             // Retrieve the project sync settings from the service
-            var syncSettings = _projectService.GetProjectSyncSettings(projectId);
+            var syncSettings = await _projectService.GetProjectSyncSettings(projectId);
 
             if (syncSettings == null)
                 return NotFound(new { Error = "Project not found" });

@@ -1,0 +1,164 @@
+﻿@page "/view-project/{ProjectId}"
+@using Microsoft.AspNetCore.Components.Forms
+@using OpenGitSync.Client.Pages.Repositories
+@using OpenGitSync.Client.Pages.SyncSettings
+@using OpenGitSync.Client.Services
+@using OpenGitSync.Client.Shared
+@using OpenGitSync.Shared.DataTransferObjects;
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize]
+@inject NavigationManager NavigationManager
+@inject IProjectService ProjectService
+
+<PageTitle>View Project</PageTitle>
+
+<h3>View Project</h3>
+
+<Tabs> 
+
+    <Tab Title="Project Details">
+        <Content>
+            @if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                <div class="alert alert-danger">@ErrorMessage</div>
+            }
+
+            @if (Project != null)
+            {
+                @if (!EditMode)
+                {
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <span type="text" id="name" class="form-control">@Project.Name</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <span type="text" id="name" class="form-control">@Project.Description</span>
+                            </div>
+
+                            <div class="form-group">
+                                <button class="btn btn-primary" @onclick="EditProject">Edit</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <EditForm EditContext="editContext" OnValidSubmit="HandleUpdateProject">
+                        <DataAnnotationsValidator />
+
+                        <div class="card mt-4">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="name">Name</label>
+                                    <InputText type="text" id="name" class="form-control" placeholder="Enter project name" @bind-Value="Project.Name" />
+                                    <ValidationMessage For="@(() => Project.Name)" />
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="description">Description</label>
+                                    <InputTextArea id="description" class="form-control" placeholder="Enter project description" @bind-Value="Project.Description"></InputTextArea>
+                                </div>
+
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    <button class="btn btn-primary" @onclick="Cancel">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </EditForm>
+                }
+            }
+        </Content>
+    </Tab>
+
+    <Tab Title="Repositories">
+        <Content>
+            <RepositoriesList ProjectId="@ProjectId" />
+        </Content>
+    </Tab>
+
+    <Tab Title="Sync settings">
+        <Content>
+            <SyncSettingsList ProjectId="@ProjectId" />
+        </Content>
+    </Tab>
+</Tabs>
+
+@code {
+    [Inject] protected ToastService ToastService { get; set; } = default!;
+    [Inject] protected PreloadService PreloadService { get; set; }
+    [Parameter] public string ProjectId { get; set; }
+
+    private ProjectDto Project { get; set; }
+    private string ErrorMessage { get; set; }
+    private EditContext editContext;
+    private bool EditMode { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProject();
+        editContext = new EditContext(Project);
+    }
+
+    private async Task LoadProject()
+    {
+        PreloadService.Show(SpinnerColor.Light, "Loading project...");
+        // Make an API request to retrieve the project by ID
+        var response = await ProjectService.GetProjectById(ProjectId);
+
+        if (response != null)
+        {
+            Project = response;
+        }
+        else
+        {
+            ErrorMessage = "Failed to load project information";
+        }
+        PreloadService.Hide();
+    }
+
+    private async Task HandleUpdateProject()
+    {
+        ErrorMessage = "";
+
+        if(!editContext.IsModified())
+        {
+            ToastService.Notify(new(ToastType.Info, $"No changes to put."));
+            return;
+        }
+
+        PreloadService.Show(SpinnerColor.Light, "Updating project...");
+        // Make an API request to update the project
+        var isSuccess = await ProjectService.UpdateProject(Project.Id, Project);
+        PreloadService.Hide();
+
+        if (isSuccess)
+        {
+            // Project update successful, redirect to the project details page or perform other actions
+            ToastService.Notify(new(ToastType.Success, $"Project details saved successfully."));
+            EditMode = false;
+            NavigationManager.NavigateTo($"/view-project/{Project.Id}");
+        }
+        else
+        {
+            // Handle the project update error, display an error message, or perform other actions
+            ToastService.Notify(new(ToastType.Danger, $"Failed to update project."));
+        }
+    }
+
+    private void EditProject()
+    {
+        Project.EditMode();
+        EditMode = true;
+    }
+
+    private void Cancel()
+    {
+        Project.Restore();
+        EditMode = false;
+    }
+}

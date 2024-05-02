@@ -22,32 +22,32 @@ namespace OpenGitSync.Server.Controllers
         }
 
         [HttpPost]
-        public ActionResult<UserProjectDto> AddUserToProject(UserProjectCreateDto createDto)
+        public async Task<ActionResult<UserProjectDto>> AddUserToProject(UserProjectCreateDto createDto)
         {
             var userProject = _mapper.Map<UserProject>(createDto);
 
-            _userProjectService.AddUserToProject(userProject);
+            await _userProjectService.AddUserToProject(userProject);
 
             var userProjectDto =  _mapper.Map<UserProjectDto>(userProject);
             return CreatedAtAction(nameof(GetUserProjectById), new { id = userProject.Id }, userProjectDto);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult RemoveUserFromProject(long id)
+        public async Task<IActionResult> RemoveUserFromProject(long id)
         {
-            var userProject = _userProjectService.GetUserProjectById(id);
+            var userProject = await _userProjectService.GetUserProjectById(id);
             if (userProject == null)
                 return NotFound();
 
-            _userProjectService.RemoveUserFromProject(userProject);
+            await _userProjectService.RemoveUserFromProject(userProject);
 
             return NoContent();
         }
 
         [HttpGet("{id}")]
-        public ActionResult<UserProjectDto> GetUserProjectById(long id)
+        public async Task<ActionResult<UserProjectDto>> GetUserProjectById(long id)
         {
-            var userProject = _userProjectService.GetUserProjectById(id);
+            var userProject = await _userProjectService.GetUserProjectById(id);
             if (userProject == null)
                 return NotFound();
 
@@ -56,9 +56,9 @@ namespace OpenGitSync.Server.Controllers
         }
 
         [HttpGet("project/{projectId}")]
-        public ActionResult<IEnumerable<UserProjectDto>> GetUserProjectsByProjectId(long projectId)
+        public async Task<ActionResult<IEnumerable<UserProjectDto>>> GetUserProjectsByProjectId(long projectId)
         {
-            var userProjects = _userProjectService.GetUserProjectsByProjectId(projectId);
+            var userProjects = await _userProjectService.GetUserProjectsByProjectId(projectId);
 
             var userProjectDtos = userProjects.Select(up => _mapper.Map<UserProjectDto>(up));
             return Ok(userProjectDtos);

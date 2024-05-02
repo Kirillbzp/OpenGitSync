@@ -63,7 +63,7 @@
         {
             // Repository creation successful, redirect to the repository details page or perform other actions
             ToastService.Notify(new(ToastType.Success, $"Repository created successfully."));
-            NavigationManager.NavigateTo($"/edit-repository/{createdRepository.Id}");
+            NavigationManager.NavigateTo($"/view-repository/{createdRepository.Id}");
         }
         else
         {

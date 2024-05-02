@@ -44,9 +44,23 @@ namespace OpenGitSync.Server.Helpers.Automapper
                 .ForMember(dest => dest.SourceRepository, opt => opt.Ignore())
                 .ForMember(dest => dest.TargetRepository, opt => opt.Ignore());
 
-            CreateMap<ScheduleDto, Schedule>();
-            CreateMap<Schedule, ScheduleDto>();
-            
+            CreateMap<SyncSettingCreateDto, SyncSetting>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.IsEnabled, opt => opt.Ignore())
+                .ForMember(dest => dest.StartTime, opt => opt.Ignore())
+                .ForMember(dest => dest.StartDate, opt => opt.Ignore())
+                .ForMember(dest => dest.EndDate, opt => opt.Ignore())
+                .ForMember(dest => dest.ScheduleId, opt => opt.Ignore())
+                .ForMember(dest => dest.Schedule, opt => opt.Ignore())
+                .ForMember(dest => dest.Project, opt => opt.Ignore())
+                .ForMember(dest => dest.SourceRepository, opt => opt.Ignore())
+                .ForMember(dest => dest.TargetRepository, opt => opt.Ignore());
+
+            CreateMap<ScheduleDto, Schedule>()
+                .ForMember(dest => dest.SyncSetting, opt => opt.Ignore());
+            CreateMap<Schedule, ScheduleDto>()
+                .ForMember(dest => dest.SyncSettingId, opt => opt.MapFrom(sc => sc.SyncSetting.Id));
+
         }
     }
 }

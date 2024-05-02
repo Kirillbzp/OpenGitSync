@@ -61,7 +61,7 @@
         {
             // Project creation successful, redirect to the project details page or perform other actions
             ToastService.Notify(new(ToastType.Success, $"Project created successfully."));
-            NavigationManager.NavigateTo($"/edit-project/{createdProject.Id}");
+            NavigationManager.NavigateTo($"/view-project/{createdProject.Id}");
         }
         else
         {

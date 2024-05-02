@@ -8,7 +8,7 @@
         ISyncSettingRepository SyncSettingRepository { get; }
         IUserProjectRepository UserProjectRepository { get; }
 
-        void SaveChanges();
+        Task SaveChanges();
     }
 
     public class UnitOfWork : IUnitOfWork
@@ -33,9 +33,9 @@
         public ISyncSettingRepository SyncSettingRepository { get; }
         public IUserProjectRepository UserProjectRepository { get; }
 
-        public void SaveChanges()
+        public async Task SaveChanges()
         {
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
         }
 
         protected virtual void Dispose(bool disposing)

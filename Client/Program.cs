@@ -1,15 +1,14 @@
+using BlazorBootstrap;
 using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using OpenGitSync.Client;
-using BlazorBootstrap;
-using OpenGitSync.Client.Services;
-using Microsoft.AspNetCore.Components.Authorization;
-using OpenGitSync.Client.Providers;
 using OpenGitSync.Client.MessageHandlers;
+using OpenGitSync.Client.Providers;
+using OpenGitSync.Client.Services;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
-using Toolbelt.Blazor;
 
 Console.WriteLine("Starting OGS...");
 
@@ -55,6 +54,7 @@ builder.Services.AddScoped<CustomAuthorizationMessageHandler>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IProjectService, ProjectService>();
 builder.Services.AddTransient<IRepositoryService, RepositoryService>();
+builder.Services.AddTransient<ISyncSettingsService, SyncSettingsService>();
 
 var host = builder.Build();
 
