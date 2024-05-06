@@ -2,8 +2,8 @@
 {
     public interface IEditable
     {
-        void EditMode();
-        void Restore();
-        
+        void BeginEdit();
+        void CancelEdit();
+        void EndEdit();
     }
 }

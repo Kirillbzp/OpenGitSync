@@ -50,7 +50,7 @@ namespace OpenGitSync.Server.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateSyncSetting(long id, SyncSettingUpdateDto updateDto)
+        public async Task<IActionResult> UpdateSyncSetting(long id, SyncSettingDto updateDto)
         {
             var syncSetting = await _syncSettingService.GetSyncSettingById(id);
             if (syncSetting == null)

@@ -1,12 +1,17 @@
 ﻿@page "/view-repository/{RepositoryId}"
+
 @using Microsoft.AspNetCore.Components.Forms
 @using OpenGitSync.Client.Services
 @using OpenGitSync.Client.Shared
 @using OpenGitSync.Shared.DataTransferObjects;
 @using Microsoft.AspNetCore.Authorization;
-@attribute [Authorize]
+
 @inject NavigationManager NavigationManager
 @inject IRepositoryService RepositoryService
+@inject ToastService ToastService
+@inject PreloadService PreloadService
+
+@attribute [Authorize]
 
 <PageTitle>View Repository</PageTitle>
 
@@ -17,45 +22,69 @@
     <div class="alert alert-danger">@ErrorMessage</div>
 }
 
-@if (Repository == null)
+@if (Repository != null)
 {
-    <LoadingIndicator loadingMessage="Loading repository information..." />
-}
-else
-{
-    <EditForm EditContext="editContext" OnValidSubmit="HandleUpdateRepository">
-        <DataAnnotationsValidator />
-
+    @if (!EditMode)
+    {
         <div class="card mt-4">
             <div class="card-body">
+                <h5 class="card-title">Repository Information</h5>
+
                 <div class="form-group">
                     <label for="name">Name</label>
-                    <InputText type="text" id="name" class="form-control" placeholder="Enter repository name" @bind-Value="Repository.Name" />
-                    <ValidationMessage For="@(() => Repository.Name)" />
+                    <span type="text" id="name" class="form-control">@Repository.Name</span>
                 </div>
 
                 <div class="form-group">
-                    <label for="url">URL</label>
-                    <InputTextArea id="url" class="form-control" placeholder="Enter repository URL" @bind-Value="Repository.Url"></InputTextArea>
-                    <ValidationMessage For="@(() => Repository.Url)" />
+                    <label for="name">Url</label>
+                    <span type="text" id="name" class="form-control">@Repository.Url</span>
                 </div>
 
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button class="btn btn-primary" @onclick="Edit">Edit</button>
                 </div>
+
             </div>
         </div>
-    </EditForm>
+    }
+    else
+    {
+        <EditForm EditContext="editContext" OnValidSubmit="HandleUpdateRepository" >
+            <DataAnnotationsValidator />
+
+            <div class="card mt-4">
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <InputText type="text" id="name" class="form-control" placeholder="Enter repository name" @bind-Value="Repository.Name" />
+                        <ValidationMessage For="@(() => Repository.Name)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="url">URL</label>
+                        <InputTextArea id="url" class="form-control" placeholder="Enter repository URL" @bind-Value="Repository.Url"></InputTextArea>
+                        <ValidationMessage For="@(() => Repository.Url)" />
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button class="btn btn-primary" @onclick="Cancel">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </EditForm>
+    }
 
 }
 
 @code {
+    [Parameter] public string RepositoryId { get; set; }
+
     private RepositoryDto Repository { get; set; }
     private string ErrorMessage { get; set; }
-    [Inject] protected ToastService ToastService { get; set; } = default!;
-    [Parameter] public string RepositoryId { get; set; }
     private EditContext editContext;
-    
+    private bool EditMode { get; set; } = false;
+
     protected override async Task OnInitializedAsync()
     {
         await LoadRepository();
@@ -64,7 +93,8 @@ else
 
     private async Task LoadRepository()
     {
-        // Make an API request to retrieve the repository by ID
+        PreloadService.Show(SpinnerColor.Light, "Loading repository...");
+
         var response = await RepositoryService.GetRepositoryById(RepositoryId);
 
         if (response != null)
@@ -75,6 +105,8 @@ else
         {
             ErrorMessage = "Failed to load repository information";
         }
+
+        PreloadService.Hide();
     }
 
     private async Task HandleUpdateRepository()
@@ -93,13 +125,26 @@ else
         if (isSuccess)
         {
             // Repository update successful, redirect to the repository details page or perform other actions
+            Repository.EndEdit();
             ToastService.Notify(new(ToastType.Success, $"Repository details saved successfully."));
-            NavigationManager.NavigateTo($"/view-repository/{Repository.Id}");
+            EditMode = false;
         }
         else
         {
             // Handle the repository update error, display an error message, or perform other actions
             ToastService.Notify(new(ToastType.Danger, $"Failed to update repository."));
         }
+    }
+
+    private void Edit()
+    {
+        Repository.BeginEdit();
+        EditMode = true;
+    }
+
+    private void Cancel()
+    {
+        Repository.CancelEdit();
+        EditMode = false;
     }
 }

@@ -5,6 +5,7 @@
 @using Microsoft.AspNetCore.Authorization;
 @inject IProjectService ProjectService
 @inject NavigationManager NavigationManager
+@inject PreloadService PreloadService
 
 @attribute [Authorize]
 
@@ -35,8 +36,7 @@
 </Grid>
 
 @code {
-    [Inject] protected PreloadService PreloadService { get; set; }
-
+    
     private IEnumerable<ProjectDto> ProjectsList { get; set; }
     
     private async Task<GridDataProviderResult<ProjectDto>> ProjectsDataProvider(GridDataProviderRequest<ProjectDto> request)

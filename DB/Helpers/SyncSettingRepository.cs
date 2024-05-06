@@ -23,7 +23,7 @@ namespace DB.Helpers
 
         public async Task<SyncSetting> GetSyncSettingById(long id)
         {
-            return await _dbContext.SyncSettings.FindAsync(id);
+            return await _dbContext.SyncSettings.Include(s => s.Schedule).Where(s => s.Id == id).FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<SyncSetting>> GetSyncSettingsByProjectId(long projectId)

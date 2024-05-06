@@ -1,4 +1,5 @@
 ﻿@page "/view-project/{ProjectId}"
+
 @using Microsoft.AspNetCore.Components.Forms
 @using OpenGitSync.Client.Pages.Repositories
 @using OpenGitSync.Client.Pages.SyncSettings
@@ -6,9 +7,13 @@
 @using OpenGitSync.Client.Shared
 @using OpenGitSync.Shared.DataTransferObjects;
 @using Microsoft.AspNetCore.Authorization;
-@attribute [Authorize]
+
 @inject NavigationManager NavigationManager
 @inject IProjectService ProjectService
+@inject ToastService ToastService
+@inject PreloadService PreloadService
+
+@attribute [Authorize]
 
 <PageTitle>View Project</PageTitle>
 
@@ -29,6 +34,7 @@
                 {
                     <div class="card mt-4">
                         <div class="card-body">
+
                             <div class="form-group">
                                 <label for="name">Name</label>
                                 <span type="text" id="name" class="form-control">@Project.Name</span>
@@ -40,8 +46,9 @@
                             </div>
 
                             <div class="form-group">
-                                <button class="btn btn-primary" @onclick="EditProject">Edit</button>
+                                <button class="btn btn-primary" @onclick="Edit">Edit</button>
                             </div>
+
                         </div>
                     </div>
                 }
@@ -89,8 +96,6 @@
 </Tabs>
 
 @code {
-    [Inject] protected ToastService ToastService { get; set; } = default!;
-    [Inject] protected PreloadService PreloadService { get; set; }
     [Parameter] public string ProjectId { get; set; }
 
     private ProjectDto Project { get; set; }
@@ -139,9 +144,9 @@
         if (isSuccess)
         {
             // Project update successful, redirect to the project details page or perform other actions
+            Project.EndEdit();
             ToastService.Notify(new(ToastType.Success, $"Project details saved successfully."));
             EditMode = false;
-            NavigationManager.NavigateTo($"/view-project/{Project.Id}");
         }
         else
         {
@@ -150,15 +155,15 @@
         }
     }
 
-    private void EditProject()
+    private void Edit()
     {
-        Project.EditMode();
+        Project.BeginEdit();
         EditMode = true;
     }
 
     private void Cancel()
     {
-        Project.Restore();
+        Project.CancelEdit();
         EditMode = false;
     }
 }

@@ -1,11 +1,16 @@
 ﻿@page "/view-sync-setting/{SyncSettingId}"
+
 @using Microsoft.AspNetCore.Components.Forms
 @using OpenGitSync.Client.Services
 @using OpenGitSync.Shared.DataTransferObjects;
 @using Microsoft.AspNetCore.Authorization;
-@attribute [Authorize]
+
 @inject NavigationManager NavigationManager
 @inject ISyncSettingsService SyncSettingsService
+@inject ToastService ToastService
+@inject PreloadService PreloadService
+
+@attribute [Authorize]
 
 <PageTitle>View Sync Setting</PageTitle>
 
@@ -16,32 +21,58 @@
     <div class="alert alert-danger">@ErrorMessage</div>
 }
 
-<EditForm EditContext="editContext" OnValidSubmit="HandleUpdateSyncSetting">
-        <DataAnnotationsValidator />
-
+@if (SyncSetting != null)
+{
+    @if (!EditMode)
+    {
         <div class="card mt-4">
             <div class="card-body">
                 <h5 class="card-title">Sync Setting Information</h5>
 
                 <div class="form-group">
                     <label for="name">Name</label>
-                <InputText type="text" id="name" class="form-control" placeholder="Enter Sync Setting name" @bind-Value="SyncSetting.Name" />
-                    <ValidationMessage For="@(() => SyncSetting.Name)" />
+                    <span type="text" id="name" class="form-control">@SyncSetting.Name</span>
                 </div>
 
                 <div class="form-group">
-                <button type="submit" class="btn btn-primary">Save changes</button>
+                    <button class="btn btn-primary" @onclick="Edit">Edit</button>
                 </div>
+
             </div>
         </div>
-    </EditForm>
+    }
+    else
+    {
+        <EditForm EditContext="editContext" OnValidSubmit="HandleUpdateSyncSetting">
+            <DataAnnotationsValidator />
+
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5 class="card-title">Sync Setting Information</h5>
+
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <InputText type="text" id="name" class="form-control" placeholder="Enter Sync Setting name" @bind-Value="SyncSetting.Name" />
+                        <ValidationMessage For="@(() => SyncSetting.Name)" />
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <button class="btn btn-primary" @onclick="Cancel">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </EditForm>
+    }
+}
 
 @code {
+    [Parameter] public string SyncSettingId { get; set; }
+
     private SyncSettingDto SyncSetting { get; set; }
     private string ErrorMessage { get; set; }
-    [Parameter] public string SyncSettingId { get; set; }
-    [Inject] protected ToastService ToastService { get; set; } = default!;
     private EditContext editContext;
+    private bool EditMode { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -51,7 +82,8 @@
 
     private async Task LoadSyncSetting()
     {
-        // Make an API request to retrieve the Sync Setting by ID
+        PreloadService.Show(SpinnerColor.Light, "Loading settings...");
+
         var response = await SyncSettingsService.GetSyncSettingById(SyncSettingId);
 
         if (response != null)
@@ -62,6 +94,8 @@
         {
             ErrorMessage = "Failed to load Sync Setting information";
         }
+
+        PreloadService.Hide();
     }
 
     private async Task HandleUpdateSyncSetting()
@@ -72,13 +106,26 @@
         if (isSuccess)
         {
             // Sync Setting creation successful, redirect to the Sync Setting details page or perform other actions
+            SyncSetting.EndEdit();
             ToastService.Notify(new(ToastType.Success, $"Sync Setting created successfully."));
-            NavigationManager.NavigateTo($"/view-sync-setting/{SyncSetting.Id}");
+            EditMode = false;
         }
         else
         {
             // Handle the Sync Setting creation error, display an error message, or perform other actions
             ToastService.Notify(new(ToastType.Danger, $"Failed to create Sync Setting."));
         }
+    }
+
+    private void Edit()
+    {
+        SyncSetting.BeginEdit();
+        EditMode = true;
+    }
+
+    private void Cancel()
+    {
+        SyncSetting.CancelEdit();
+        EditMode = false;
     }
 }
