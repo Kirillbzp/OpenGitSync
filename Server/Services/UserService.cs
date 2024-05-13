@@ -172,7 +172,7 @@ namespace OpenGitSync.Server.Services
 
         public async Task<IEnumerable<ProjectDto>> GetUserProjects(string userId)
         {
-            var projects = await _projectRepository.GetProjectsByUserId(userId);
+            var projects = await _projectRepository.GetProjects(userId);
             if (projects == null)
                 return null;
 

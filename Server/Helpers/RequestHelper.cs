@@ -21,6 +21,7 @@ namespace OpenGitSync.Server.Helpers
         private const string AuthHeader = "Authorization";
         private const string RefreshHeader = "refreshToken";
         private const string MacAddressHeader = "MacAddress";
+        private const string IpAddressHeader = "X-Forwarded-For";
 
         public delegate bool Parser<T>(string input, out T b);
 
@@ -71,7 +72,7 @@ namespace OpenGitSync.Server.Helpers
 
         public string GetIpAddress(HttpContext context)
         {
-            var ipAddress = GetHeaderOrEmpty(context.Request, "X-Forwarded-For");
+            var ipAddress = GetHeaderOrEmpty(context.Request, IpAddressHeader);
             return !string.IsNullOrWhiteSpace(ipAddress) ? ipAddress : context.Connection.RemoteIpAddress.ToString();
         }
 

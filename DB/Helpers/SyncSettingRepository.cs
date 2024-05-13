@@ -5,8 +5,8 @@ namespace DB.Helpers
 {
     public interface ISyncSettingRepository
     {
-        Task<SyncSetting> GetSyncSettingById(long id);
-        Task<IEnumerable<SyncSetting>> GetSyncSettingsByProjectId(long projectId);
+        Task<SyncSetting?> GetSyncSettingById(long id, string userId);
+        Task<IEnumerable<SyncSetting>> GetSyncSettingsByProjectId(long projectId, string userId);
         Task AddSyncSetting(SyncSetting syncSetting);
         Task UpdateSyncSetting(SyncSetting syncSetting);
         Task DeleteSyncSetting(SyncSetting syncSetting);
@@ -21,14 +21,21 @@ namespace DB.Helpers
             _dbContext = dbContext;
         }
 
-        public async Task<SyncSetting> GetSyncSettingById(long id)
+        public async Task<SyncSetting?> GetSyncSettingById(long id, string userId)
         {
-            return await _dbContext.SyncSettings.Include(s => s.Schedule).Where(s => s.Id == id).FirstOrDefaultAsync();
+            return await _dbContext.SyncSettings.Include(s => s.Schedule)
+                                                .Include(s => s.Project)
+                                                .ThenInclude(p => p.UserProjects)
+                                                .Where(s => s.Id == id && s.Project.UserProjects.Any(up => up.UserId == userId))
+                                                .FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<SyncSetting>> GetSyncSettingsByProjectId(long projectId)
+        public async Task<IEnumerable<SyncSetting>> GetSyncSettingsByProjectId(long projectId, string userId)
         {
-            return await _dbContext.SyncSettings.Where(s => s.ProjectId == projectId).ToListAsync();
+            return await _dbContext.SyncSettings.Include(s => s.Project)
+                                                .ThenInclude(p => p.UserProjects)
+                                                .Where(s => s.ProjectId == projectId && s.Project.UserProjects.Any(up => up.UserId == userId))
+                                                .ToListAsync();
         }
 
         public async Task AddSyncSetting(SyncSetting syncSetting)

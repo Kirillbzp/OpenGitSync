@@ -5,13 +5,13 @@ namespace DB.Helpers
 {
     public interface IRepositoryRepository
     {
-        Task<Repository> GetRepositoryById(long id);
-        Task<IEnumerable<Repository>> GetRepositoriesByProjectId(long projectId);
+        Task<Repository?> GetRepositoryById(long id, string userId);
+        Task<IEnumerable<Repository>> GetRepositoriesByProjectId(long projectId, string userId);
         Task<Repository> UpdateRepository(Repository repository);
         Task DeleteRepository(Repository repository);
         Task<Repository> CreateRepository(Repository repository);
-        Task<IEnumerable<Repository>> GetRepositories();
-        Task<IEnumerable<Repository>> RepositoryTypeahead(string query, long projectId);
+        Task<IEnumerable<Repository>> GetRepositories(string userId);
+        Task<IEnumerable<Repository>> RepositoryTypeahead(string query, long projectId, string userId);
     }
 
 
@@ -24,14 +24,20 @@ namespace DB.Helpers
             _dbContext = dbContext;
         }
 
-        public async Task<Repository> GetRepositoryById(long id)
+        public async Task<Repository?> GetRepositoryById(long id, string userId)
         {
-            return await _dbContext.Repositories.FindAsync(id);
+            return await _dbContext.Repositories.Include(r => r.Project)
+                                                .ThenInclude(p => p.UserProjects)
+                                                .Where(r => r.Id == id && r.Project.UserProjects.Any(up => up.UserId == userId))
+                                                .FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<Repository>> GetRepositoriesByProjectId(long projectId)
+        public async Task<IEnumerable<Repository>> GetRepositoriesByProjectId(long projectId, string userId)
         {
-            return await _dbContext.Repositories.Where(r => r.ProjectId == projectId).ToListAsync();
+            return await _dbContext.Repositories.Include(r => r.Project)
+                                                .ThenInclude(p => p.UserProjects)
+                                                .Where(r => r.ProjectId == projectId && r.Project.UserProjects.Any(up => up.UserId == userId))
+                                                .ToListAsync();
         }
 
         public async Task<Repository> UpdateRepository(Repository repository)
@@ -62,14 +68,22 @@ namespace DB.Helpers
             return repository;
         }
 
-        public async Task<IEnumerable<Repository>> GetRepositories()
+        public async Task<IEnumerable<Repository>> GetRepositories(string userId)
         {
-            return await _dbContext.Repositories.ToListAsync();
+            return await _dbContext.Repositories.Include(r => r.Project)
+                                                .ThenInclude(p => p.UserProjects)
+                                                .Where(r => r.Project.UserProjects.Any(up => up.UserId == userId))
+                                                .ToListAsync();
         }
 
-        public async Task<IEnumerable<Repository>> RepositoryTypeahead(string query, long projectId)
+        public async Task<IEnumerable<Repository>> RepositoryTypeahead(string query, long projectId, string userId)
         {
-            return await _dbContext.Repositories.Where(r => r.ProjectId == projectId && r.Name.Contains(query)).ToListAsync();
+            return await _dbContext.Repositories.Include(r => r.Project)
+                                                .ThenInclude(p => p.UserProjects)
+                                                .Where(r => r.ProjectId == projectId && 
+                                                            r.Name.Contains(query) && 
+                                                            r.Project.UserProjects.Any(up => up.UserId == userId))
+                                                .ToListAsync();
         }
 
     }

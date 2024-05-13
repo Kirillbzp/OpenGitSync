@@ -7,12 +7,12 @@ namespace OpenGitSync.Server.Services
 {
     public interface IProjectService
     {
-        Task<IEnumerable<ProjectDto>> GetProjects();
-        Task<ProjectDto> GetProjectById(long id);
-        Task<ProjectDto> CreateProject(ProjectCreateDto projectDto);
-        Task<ProjectDto> UpdateProject(long id, ProjectDto projectDto);
-        Task<ProjectDto> DeleteProject(long id);
-        Task<IEnumerable<SyncSettingDto>> GetProjectSyncSettings(long projectId);
+        Task<IEnumerable<ProjectDto>> GetProjects(string userId);
+        Task<ProjectDto?> GetProjectById(long id, string userId);
+        Task<ProjectDto> CreateProject(ProjectCreateDto projectDto, string userId);
+        Task<ProjectDto?> UpdateProject(long id, ProjectDto projectDto, string userId);
+        Task<ProjectDto?> DeleteProject(long id, string userId);
+        Task<IEnumerable<SyncSettingDto>> GetProjectSyncSettings(long projectId, string userId);
     }
 
     public class ProjectService : IProjectService
@@ -28,28 +28,28 @@ namespace OpenGitSync.Server.Services
             _syncSettingRepository = syncSettingRepository;
         }
 
-        public async Task<IEnumerable<ProjectDto>> GetProjects()
+        public async Task<IEnumerable<ProjectDto>> GetProjects(string userId)
         {
-            var projects = await _projectRepository.GetProjects();
+            var projects = await _projectRepository.GetProjects(userId);
             return projects.Select(p => _mapper.Map<ProjectDto>(p));
         }
 
-        public async Task<ProjectDto> GetProjectById(long id)
+        public async Task<ProjectDto?> GetProjectById(long id, string userId)
         {
-            var project = await _projectRepository.GetProjectById(id);
+            var project = await _projectRepository.GetProjectById(id, userId);
             return project != null ? _mapper.Map<ProjectDto>(project) : null;
         }
 
-        public async Task<ProjectDto> CreateProject(ProjectCreateDto projectDto)
+        public async Task<ProjectDto> CreateProject(ProjectCreateDto projectDto, string userId)
         {
             var project = _mapper.Map<Project>(projectDto);
-            var createdProject = await _projectRepository.CreateProject(project);
+            var createdProject = await _projectRepository.CreateProject(project, userId);
             return _mapper.Map<ProjectDto>(createdProject);
         }
 
-        public async Task<ProjectDto> UpdateProject(long id, ProjectDto projectDto)
+        public async Task<ProjectDto?> UpdateProject(long id, ProjectDto projectDto, string userId)
         {
-            var existingProject = await _projectRepository.GetProjectById(id);
+            var existingProject = await _projectRepository.GetProjectById(id, userId);
 
             if (existingProject == null)
                 return null;
@@ -62,9 +62,9 @@ namespace OpenGitSync.Server.Services
             return _mapper.Map<ProjectDto>(updatedProject);
         }
 
-        public async Task<ProjectDto> DeleteProject(long id)
+        public async Task<ProjectDto?> DeleteProject(long id, string userId)
         {
-            var existingProject = await _projectRepository.GetProjectById(id);
+            var existingProject = await _projectRepository.GetProjectById(id, userId);
 
             if (existingProject == null)
                 return null;
@@ -73,9 +73,9 @@ namespace OpenGitSync.Server.Services
             return _mapper.Map<ProjectDto>(deletedProject);
         }
 
-        public async Task<IEnumerable<SyncSettingDto>> GetProjectSyncSettings(long projectId)
+        public async Task<IEnumerable<SyncSettingDto>> GetProjectSyncSettings(long projectId, string userId)
         {
-            var syncSettings = await _syncSettingRepository.GetSyncSettingsByProjectId(projectId);
+            var syncSettings = await _syncSettingRepository.GetSyncSettingsByProjectId(projectId, userId);
             var syncSettingDtos = syncSettings.Select(syncSetting => _mapper.Map<SyncSettingDto>(syncSetting)).ToList();
 
             return syncSettingDtos;

@@ -5,8 +5,8 @@ namespace OpenGitSync.Server.Services
 {
     public interface ISyncSettingService
     {
-        Task<SyncSetting> GetSyncSettingById(long id);
-        Task<IEnumerable<SyncSetting>> GetSyncSettingsByProjectId(long projectId);
+        Task<SyncSetting?> GetSyncSettingById(long id, string userId);
+        Task<IEnumerable<SyncSetting>> GetSyncSettingsByProjectId(long projectId, string userId);
         Task CreateSyncSetting(SyncSetting syncSetting);
         Task UpdateSyncSetting(SyncSetting syncSetting);
         Task DeleteSyncSetting(SyncSetting syncSetting);
@@ -21,14 +21,14 @@ namespace OpenGitSync.Server.Services
             _syncSettingRepository = syncSettingRepository;
         }
 
-        public async Task<SyncSetting> GetSyncSettingById(long id)
+        public async Task<SyncSetting?> GetSyncSettingById(long id, string userId)
         {
-            return await _syncSettingRepository.GetSyncSettingById(id);
+            return await _syncSettingRepository.GetSyncSettingById(id, userId);
         }
 
-        public async Task<IEnumerable<SyncSetting>> GetSyncSettingsByProjectId(long projectId)
+        public async Task<IEnumerable<SyncSetting>> GetSyncSettingsByProjectId(long projectId, string userId)
         {
-            return await _syncSettingRepository.GetSyncSettingsByProjectId(projectId);
+            return await _syncSettingRepository.GetSyncSettingsByProjectId(projectId, userId);
         }
 
         public async Task CreateSyncSetting(SyncSetting syncSetting)

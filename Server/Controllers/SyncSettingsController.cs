@@ -24,7 +24,7 @@ namespace OpenGitSync.Server.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<SyncSettingDto>> GetSyncSettingById(long id)
         {
-            var syncSetting = await _syncSettingService.GetSyncSettingById(id);
+            var syncSetting = await _syncSettingService.GetSyncSettingById(id, UserId);
             if (syncSetting == null)
                 return NotFound(new { Error = "Sync setting not found" });
 
@@ -35,7 +35,7 @@ namespace OpenGitSync.Server.Controllers
         [HttpGet("project/{projectId}")]
         public async Task<ActionResult<IEnumerable<SyncSettingDto>>> GetSyncSettingsByProjectId(long projectId)
         {
-            var syncSettings = await _syncSettingService.GetSyncSettingsByProjectId(projectId);
+            var syncSettings = await _syncSettingService.GetSyncSettingsByProjectId(projectId, UserId);
             var syncSettingDtos = _mapper.Map<IEnumerable<SyncSettingDto>>(syncSettings);
             return Ok(syncSettingDtos);
         }
@@ -52,7 +52,7 @@ namespace OpenGitSync.Server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateSyncSetting(long id, SyncSettingDto updateDto)
         {
-            var syncSetting = await _syncSettingService.GetSyncSettingById(id);
+            var syncSetting = await _syncSettingService.GetSyncSettingById(id, UserId);
             if (syncSetting == null)
                 return NotFound(new { Error = "Sync setting not found" });
 
@@ -65,7 +65,7 @@ namespace OpenGitSync.Server.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSyncSetting(long id)
         {
-            var syncSetting = await _syncSettingService.GetSyncSettingById(id);
+            var syncSetting = await _syncSettingService.GetSyncSettingById(id, UserId);
             if (syncSetting == null)
                 return NotFound(new { Error = "Sync setting not found" });
 

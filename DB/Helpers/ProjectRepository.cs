@@ -1,16 +1,16 @@
 ﻿using DB.Models;
+using DB.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace DB.Helpers
 {
     public interface IProjectRepository
     {
-        Task<IEnumerable<Project>> GetProjects();
-        Task<Project> GetProjectById(long id);
-        Task<Project> CreateProject(Project project);
+        Task<IEnumerable<Project>> GetProjects(string userId);
+        Task<Project?> GetProjectById(long id, string userId);
+        Task<Project> CreateProject(Project project, string userId);
         Task<Project> UpdateProject(Project project);
         Task<Project> DeleteProject(Project project);
-        Task<IEnumerable<Project>> GetProjectsByUserId(string userId);
     }
 
     public class ProjectRepository : IProjectRepository
@@ -22,20 +22,28 @@ namespace DB.Helpers
             _dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<Project>> GetProjects()
+        public async Task<IEnumerable<Project>> GetProjects(string userId)
         {
-            return await _dbContext.Projects.Include(p => p.Repositories).ToListAsync();
+            return await _dbContext.Projects.Include(p => p.Repositories)
+                                            .Include(p => p.UserProjects)
+                                            .Where(p => p.UserProjects.Any(up => up.UserId == userId))
+                                            .ToListAsync();
         }
 
-        public async Task<Project> GetProjectById(long id)
+        public async Task<Project?> GetProjectById(long id, string userId)
         {
-            return await _dbContext.Projects.Include(p => p.Repositories).FirstOrDefaultAsync(p => p.Id == id);
+            return await _dbContext.Projects.Include(p => p.Repositories)
+                                            .Include(p => p.UserProjects)
+                                            .Where(p => p.Id == id && p.UserProjects.Any(up => up.UserId == userId))
+                                            .FirstOrDefaultAsync();
         }
 
-        public async Task<Project> CreateProject(Project project)
+        public async Task<Project> CreateProject(Project project, string userId)
         {
             project.CreatedAt = DateTime.Now;
             project.UpdatedAt = DateTime.Now;
+
+            project.UserProjects = new List<UserProject> { new UserProject { UserId = userId, Role = ProjectPermission.Owner } };
 
             _dbContext.Projects.Add(project);
             await _dbContext.SaveChangesAsync();
@@ -57,10 +65,6 @@ namespace DB.Helpers
             return project;
         }
 
-        public async Task<IEnumerable<Project>> GetProjectsByUserId(string userId)
-        {
-            return await _dbContext.UserProjects.Where(u => u.UserId == userId).Include(p => p.Project).Select(p => p.Project).ToListAsync();
-        }
     }
 
 }

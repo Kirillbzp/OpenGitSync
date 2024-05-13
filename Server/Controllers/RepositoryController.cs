@@ -20,14 +20,14 @@ namespace OpenGitSync.Server.Controllers
         [HttpGet]
         public async Task<IActionResult> GetRepositories()
         {
-            var repositories = await _repositoryService.GetRepositories();
+            var repositories = await _repositoryService.GetRepositories(UserId);
             return Ok(repositories);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetRepository(long id)
         {
-            var repository = await _repositoryService.GetRepositoryById(id);
+            var repository = await _repositoryService.GetRepositoryById(id, UserId);
 
             if (repository == null)
                 return NotFound(new { Error = "Repository not found" });
@@ -38,21 +38,21 @@ namespace OpenGitSync.Server.Controllers
         [HttpGet("project/{projectId}")]
         public async Task<IActionResult> GetRepositoriesByProject(long projectId)
         {
-            var repositories = await _repositoryService.GetRepositoriesByProject(projectId);
+            var repositories = await _repositoryService.GetRepositoriesByProject(projectId, UserId);
             return Ok(repositories);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateRepository(RepositoryCreateDto repositoryDto)
         {
-            var createdRepository = await _repositoryService.CreateRepository(repositoryDto);
+            var createdRepository = await _repositoryService.CreateRepository(repositoryDto, UserId);
             return CreatedAtAction(nameof(GetRepository), new { id = createdRepository.Id }, createdRepository);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateRepository(long id, RepositoryDto repositoryDto)
         {
-            var updatedRepository = await _repositoryService.UpdateRepository(id, repositoryDto);
+            var updatedRepository = await _repositoryService.UpdateRepository(id, repositoryDto, UserId);
 
             if (updatedRepository == null)
                 return NotFound(new { Error = "Repository not found" });
@@ -63,7 +63,7 @@ namespace OpenGitSync.Server.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRepository(long id)
         {
-            var deletedRepository = await _repositoryService.DeleteRepository(id);
+            var deletedRepository = await _repositoryService.DeleteRepository(id, UserId);
 
             if (deletedRepository == null)
                 return NotFound(new { Error = "Repository not found" });
@@ -74,7 +74,7 @@ namespace OpenGitSync.Server.Controllers
         [HttpGet("typeahead")]
         public async Task<IActionResult> RepositoryTypeahead(string query, long projectId)
         {
-            var repositories = await _repositoryService.RepositoryTypeahead(query, projectId);
+            var repositories = await _repositoryService.RepositoryTypeahead(query, projectId, UserId);
             return Ok(repositories);
         }
     }
