@@ -77,5 +77,12 @@ namespace OpenGitSync.Server.Controllers
             var repositories = await _repositoryService.RepositoryTypeahead(query, projectId, UserId);
             return Ok(repositories);
         }
+
+        [HttpGet("checkConnection")]
+        public async Task<IActionResult> CheckConnection(string url, string token)
+        {
+            var result = await _repositoryService.CheckConnection(url, token);
+            return Ok(result);
+        }
     }
 }

@@ -23,7 +23,7 @@ namespace DB.Models
 
         #region Relationships
 
-        public List<Repository> Repositories { get; set; }
+        public List<RepositoryModel> Repositories { get; set; }
         public List<UserProject> UserProjects { get; set; }
         public List<SyncSetting> SyncSettings{ get; set; }
 

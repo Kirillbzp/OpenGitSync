@@ -39,11 +39,11 @@ namespace DB.Models
 
         public long SourceRepositoryId { get; set; }
         [ForeignKey("SourceRepositoryId")]
-        public Repository SourceRepository { get; set; }
+        public RepositoryModel SourceRepository { get; set; }
 
         public long TargetRepositoryId { get; set; }
         [ForeignKey("TargetRepositoryId")]
-        public Repository TargetRepository { get; set; }
+        public RepositoryModel TargetRepository { get; set; }
         
         #endregion
     }

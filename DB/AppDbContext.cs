@@ -16,7 +16,7 @@ namespace DB
 
         public DbSet<User> Users { get; set; }
         public DbSet<Project> Projects { get; set; }
-        public DbSet<Repository> Repositories { get; set; }
+        public DbSet<RepositoryModel> Repositories { get; set; }
         public DbSet<SyncSetting> SyncSettings { get; set; }
         public DbSet<Schedule> Schedules { get; set; }
         public DbSet<UserProject> UserProjects { get; set; }

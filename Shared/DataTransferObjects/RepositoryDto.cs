@@ -10,7 +10,7 @@ namespace OpenGitSync.Shared.DataTransferObjects
         public long Id { get; set; }
         public string Name { get; set; }
         public string Url { get; set; }
-        public string Key { get; set; }
+        public string Token { get; set; }
         public RepositoryType RepositoryType { get; set; }
         [NonEditable]
         public DateTime CreatedAt { get; set; }
@@ -23,7 +23,7 @@ namespace OpenGitSync.Shared.DataTransferObjects
         {
             Name = string.Empty;
             Url = string.Empty;
-            Key = string.Empty;
+            Token = string.Empty;
         }
 
         #region IEditable

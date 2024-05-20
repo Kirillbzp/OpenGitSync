@@ -5,13 +5,13 @@ namespace DB.Helpers
 {
     public interface IRepositoryRepository
     {
-        Task<Repository?> GetRepositoryById(long id, string userId);
-        Task<IEnumerable<Repository>> GetRepositoriesByProjectId(long projectId, string userId);
-        Task<Repository> UpdateRepository(Repository repository);
-        Task DeleteRepository(Repository repository);
-        Task<Repository> CreateRepository(Repository repository);
-        Task<IEnumerable<Repository>> GetRepositories(string userId);
-        Task<IEnumerable<Repository>> RepositoryTypeahead(string query, long projectId, string userId);
+        Task<RepositoryModel?> GetRepositoryById(long id, string userId);
+        Task<IEnumerable<RepositoryModel>> GetRepositoriesByProjectId(long projectId, string userId);
+        Task<RepositoryModel> UpdateRepository(RepositoryModel repository);
+        Task DeleteRepository(RepositoryModel repository);
+        Task<RepositoryModel> CreateRepository(RepositoryModel repository);
+        Task<IEnumerable<RepositoryModel>> GetRepositories(string userId);
+        Task<IEnumerable<RepositoryModel>> RepositoryTypeahead(string query, long projectId, string userId);
     }
 
 
@@ -24,7 +24,7 @@ namespace DB.Helpers
             _dbContext = dbContext;
         }
 
-        public async Task<Repository?> GetRepositoryById(long id, string userId)
+        public async Task<RepositoryModel?> GetRepositoryById(long id, string userId)
         {
             return await _dbContext.Repositories.Include(r => r.Project)
                                                 .ThenInclude(p => p.UserProjects)
@@ -32,7 +32,7 @@ namespace DB.Helpers
                                                 .FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<Repository>> GetRepositoriesByProjectId(long projectId, string userId)
+        public async Task<IEnumerable<RepositoryModel>> GetRepositoriesByProjectId(long projectId, string userId)
         {
             return await _dbContext.Repositories.Include(r => r.Project)
                                                 .ThenInclude(p => p.UserProjects)
@@ -40,7 +40,7 @@ namespace DB.Helpers
                                                 .ToListAsync();
         }
 
-        public async Task<Repository> UpdateRepository(Repository repository)
+        public async Task<RepositoryModel> UpdateRepository(RepositoryModel repository)
         {
             repository.UpdatedAt = DateTime.Now;
 
@@ -50,13 +50,13 @@ namespace DB.Helpers
             return repository;
         }
 
-        public async Task DeleteRepository(Repository repository)
+        public async Task DeleteRepository(RepositoryModel repository)
         {
             _dbContext.Repositories.Remove(repository);
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<Repository> CreateRepository(Repository repository)
+        public async Task<RepositoryModel> CreateRepository(RepositoryModel repository)
         {
 
             repository.CreatedAt = DateTime.Now;
@@ -68,7 +68,7 @@ namespace DB.Helpers
             return repository;
         }
 
-        public async Task<IEnumerable<Repository>> GetRepositories(string userId)
+        public async Task<IEnumerable<RepositoryModel>> GetRepositories(string userId)
         {
             return await _dbContext.Repositories.Include(r => r.Project)
                                                 .ThenInclude(p => p.UserProjects)
@@ -76,7 +76,7 @@ namespace DB.Helpers
                                                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Repository>> RepositoryTypeahead(string query, long projectId, string userId)
+        public async Task<IEnumerable<RepositoryModel>> RepositoryTypeahead(string query, long projectId, string userId)
         {
             return await _dbContext.Repositories.Include(r => r.Project)
                                                 .ThenInclude(p => p.UserProjects)

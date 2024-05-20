@@ -13,9 +13,9 @@
 
 @attribute [Authorize]
 
-<PageTitle>View Repository</PageTitle>
+<PageTitle>@(EditMode ? "Edit" : "View") Repository</PageTitle>
 
-<h3>View Repository</h3>
+<h3>@(EditMode ? "Edit" : "View") Repository</h3>
 
 @if (!string.IsNullOrEmpty(ErrorMessage))
 {
@@ -36,8 +36,13 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="name">Url</label>
-                    <span type="text" id="name" class="form-control">@Repository.Url</span>
+                    <label for="url">Url</label>
+                    <span type="text" id="url" class="form-control">@Repository.Url</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="token">Token</label>
+                    <span type="text" id="token" class="form-control">@Repository.Token</span>
                 </div>
 
                 <div class="form-group">
@@ -67,8 +72,15 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="token">Token</label>
+                        <InputTextArea id="token" class="form-control" placeholder="Enter Token" @bind-Value="Repository.Token"></InputTextArea>
+                        <ValidationMessage For="@(() => Repository.Token)" />
+                    </div>
+
+                    <div class="form-group">
                         <button type="submit" class="btn btn-primary">Save Changes</button>
-                        <button class="btn btn-primary" @onclick="Cancel">Cancel</button>
+                        <button class="btn btn-primary" @onclick:preventDefault="true" @onclick="Cancel">Cancel</button>
+                        <button id="btncheck" class="btn btn-warning" @onclick:preventDefault="true" @onclick="CheckConnection">Check connection</button>
                     </div>
                 </div>
             </div>
@@ -146,5 +158,23 @@
     {
         Repository.CancelEdit();
         EditMode = false;
+    }
+
+    private async Task CheckConnection()
+    {
+        PreloadService.Show(SpinnerColor.Light, "Checking connection...");
+
+        var isSuccess = await RepositoryService.CheckConnection(Repository.Url, Repository.Token);
+
+        if (isSuccess)
+        {
+            ToastService.Notify(new(ToastType.Success, $"Connection successful."));
+        }
+        else
+        {
+            ToastService.Notify(new(ToastType.Danger, $"Failed to connect to the repository."));
+        }
+
+        PreloadService.Hide();
     }
 }

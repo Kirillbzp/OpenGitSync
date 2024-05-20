@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using OpenGitSync.Server.Controllers;
 using OpenGitSync.Server.Helpers;
 using OpenGitSync.Server.Helpers.Automapper;
+using OpenGitSync.Server.Helpers.Git;
 using OpenGitSync.Server.Services;
 
 
@@ -47,6 +48,8 @@ namespace OpenGitSync.Server
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ISyncSettingRepository, SyncSettingRepository>();
             services.AddScoped<IUserProjectRepository, UserProjectRepository>();
+
+            services.AddScoped<IGitHubService, GitHubService>();
 
             services.AddScoped<UserManager<User>>();
         }

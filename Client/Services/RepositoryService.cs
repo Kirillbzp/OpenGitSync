@@ -11,6 +11,7 @@ namespace OpenGitSync.Client.Services
         Task<(bool, RepositoryDto)> CreateRepository(RepositoryCreateDto repositoryCreateDto);
         Task<bool> UpdateRepository(long id, RepositoryDto repositoryUpdateDto);
         Task<List<RepositoryDto>> RepositoryTypeahead(string query, long projectId);
+        Task<bool> CheckConnection(string url, string token);
     }
 }
 
@@ -89,11 +90,17 @@ namespace OpenGitSync.Client.Services
 
         public async Task<List<RepositoryDto>> RepositoryTypeahead(string query, long projectId)
         {
-           var result = await _httpClient.GetFromJsonAsyncSafe<List<RepositoryDto>>($"api/repository/typeahead?query={query}&projectId={projectId}");
+            var result = await _httpClient.GetFromJsonAsyncSafe<List<RepositoryDto>>($"api/repository/typeahead?query={query}&projectId={projectId}");
             if (result == null)
             {
                 return new List<RepositoryDto>();
             }
+            return result;
+        }
+
+        public async Task<bool> CheckConnection(string url, string token)
+        {
+            var result = await _httpClient.GetFromJsonAsyncSafe<bool>($"api/repository/checkConnection?url={url}&token={token}");
             return result;
         }
     }

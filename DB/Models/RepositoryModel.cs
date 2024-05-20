@@ -4,11 +4,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DB.Models
 {
-    public class Repository
+    public class RepositoryModel
     {
-        public Repository() 
+        public RepositoryModel() 
         { 
-            Key = string.Empty;
+            Token = string.Empty;
             RepositoryType = RepositoryType.Git;
         }
 
@@ -20,7 +20,7 @@ namespace DB.Models
         public string Name { get; set; }
         [Required]
         public string Url { get; set; }
-        public string Key { get; set; }
+        public string Token { get; set; }
         public RepositoryType RepositoryType { get; set; }
 
         #endregion

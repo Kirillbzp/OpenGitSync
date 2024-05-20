@@ -4,6 +4,7 @@
     {
         public string Name { get; set; }
         public string Url { get; set; }
+        public string Token { get; set; }
         public long ProjectId { get; set; }
     }
 

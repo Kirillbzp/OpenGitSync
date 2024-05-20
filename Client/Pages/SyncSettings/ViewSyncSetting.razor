@@ -12,9 +12,9 @@
 
 @attribute [Authorize]
 
-<PageTitle>View Sync Setting</PageTitle>
+<PageTitle>@(EditMode ? "Edit" : "View") Sync Setting</PageTitle>
 
-<h3>View Sync Setting</h3>
+<h3>@(EditMode ? "Edit" : "View") Sync Setting</h3>
 
 @if (!string.IsNullOrEmpty(ErrorMessage))
 {

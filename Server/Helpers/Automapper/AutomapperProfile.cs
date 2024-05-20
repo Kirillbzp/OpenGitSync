@@ -22,14 +22,13 @@ namespace OpenGitSync.Server.Helpers.Automapper
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
 
-            CreateMap<Repository, RepositoryDto>();
-            CreateMap<RepositoryDto, Repository>()
+            CreateMap<RepositoryModel, RepositoryDto>();
+            CreateMap<RepositoryDto, RepositoryModel>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.Project, opt => opt.Ignore());
-            CreateMap<RepositoryCreateDto, Repository>()
+            CreateMap<RepositoryCreateDto, RepositoryModel>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
-                .ForMember(dest => dest.Key, opt => opt.Ignore())
                 .ForMember(dest => dest.RepositoryType, opt => opt.Ignore())
                 .ForMember(dest => dest.Project, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DB.Helpers;
 using DB.Models;
+using OpenGitSync.Server.Helpers.Git;
 using OpenGitSync.Shared.DataTransferObjects;
 
 namespace OpenGitSync.Server.Services
@@ -14,17 +15,20 @@ namespace OpenGitSync.Server.Services
         Task<RepositoryDto?> UpdateRepository(long id, RepositoryDto repositoryDto, string userId);
         Task<RepositoryDto?> DeleteRepository(long id, string userId);
         Task<IEnumerable<RepositoryDto>> RepositoryTypeahead(string query, long projectId, string userId);
+        Task<bool> CheckConnection(string url, string token);
     }
 
     public class RepositoryService : IRepositoryService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IGitHubService _gitService;
 
-        public RepositoryService(IUnitOfWork unitOfWork, IMapper mapper)
+        public RepositoryService(IUnitOfWork unitOfWork, IMapper mapper, IGitHubService gitService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _gitService = gitService;
         }
 
         public async Task<IEnumerable<RepositoryDto>> GetRepositories(string userId)
@@ -50,7 +54,7 @@ namespace OpenGitSync.Server.Services
 
         public async Task<RepositoryDto> CreateRepository(RepositoryCreateDto repositoryDto, string userId)
         {
-            var repository = _mapper.Map<Repository>(repositoryDto);
+            var repository = _mapper.Map<RepositoryModel>(repositoryDto);
             var createdRepository = await _unitOfWork.RepositoryRepository.CreateRepository(repository);
             await _unitOfWork.SaveChanges();
             var createdRepositoryDto = _mapper.Map<RepositoryDto>(createdRepository);
@@ -91,6 +95,11 @@ namespace OpenGitSync.Server.Services
             var repositories = await _unitOfWork.RepositoryRepository.RepositoryTypeahead(query, projectId, userId);
             var repositoryDtos = _mapper.Map<IEnumerable<RepositoryDto>>(repositories);
             return repositoryDtos;
+        }
+
+        public async Task<bool> CheckConnection(string url, string token)
+        {
+            return await _gitService.CheckConnection(url, token);
         }
     }
 
