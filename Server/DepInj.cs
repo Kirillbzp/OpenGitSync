@@ -1,15 +1,12 @@
 ﻿using AutoMapper;
-using DB;
 using DB.Helpers;
 using DB.Models;
-using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using OpenGitSync.Server.Controllers;
 using OpenGitSync.Server.Helpers;
 using OpenGitSync.Server.Helpers.Automapper;
-using OpenGitSync.Server.Helpers.Git;
 using OpenGitSync.Server.Services;
+using OpenGitSync.Server.Services.Git;
 
 
 namespace OpenGitSync.Server

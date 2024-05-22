@@ -5,7 +5,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
-namespace OpenGitSync.Server.Helpers.Git
+namespace OpenGitSync.Server.Services.Git
 {
     public interface IGitHubService
     {
@@ -13,9 +13,6 @@ namespace OpenGitSync.Server.Helpers.Git
     }
     public class GitHubService : GitWorkerBase, IGitHubService
     {
-        //private string repoAddress = "https://github.com/Kirillbzp/OpenGitSync.git";
-        //private string token = "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";
-
         const string baseUrl = "https://api.github.com";
 
         public GitHubService() : base()

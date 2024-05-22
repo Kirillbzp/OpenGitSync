@@ -1,4 +1,4 @@
-﻿namespace OpenGitSync.Server.Helpers.Git
+﻿namespace OpenGitSync.Server.Services.Git
 {
     
     public class GitWorkerBase

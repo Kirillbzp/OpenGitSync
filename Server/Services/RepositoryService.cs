@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using DB.Helpers;
 using DB.Models;
-using OpenGitSync.Server.Helpers.Git;
+using OpenGitSync.Server.Services.Git;
 using OpenGitSync.Shared.DataTransferObjects;
 
 namespace OpenGitSync.Server.Services
