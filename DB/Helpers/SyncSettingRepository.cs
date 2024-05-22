@@ -1,4 +1,5 @@
 ﻿using DB.Models;
+using DB.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace DB.Helpers
@@ -44,6 +45,7 @@ namespace DB.Helpers
             _dbContext.Schedules.Add(newSchedule);
             syncSetting.Schedule = newSchedule;
             syncSetting.ScheduleId = newSchedule.Id;
+            syncSetting.SyncStartType = SyncStartTypes.Manually;
             _dbContext.SyncSettings.Add(syncSetting);
             await _dbContext.SaveChangesAsync();
         }

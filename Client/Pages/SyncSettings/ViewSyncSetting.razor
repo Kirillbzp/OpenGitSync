@@ -2,6 +2,7 @@
 
 @using Microsoft.AspNetCore.Components.Forms
 @using OpenGitSync.Client.Services
+@using OpenGitSync.Client.Shared.Directives
 @using OpenGitSync.Shared.DataTransferObjects;
 @using Microsoft.AspNetCore.Authorization;
 
@@ -35,6 +36,16 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="name">Source Repository</label>
+                    <Repository RepositoryId="@SyncSetting.SourceRepositoryId"></Repository>
+                </div>
+
+                <div class="form-group">
+                    <label for="name">Target Repository</label>
+                    <Repository RepositoryId="@SyncSetting.TargetRepositoryId"></Repository>
+                </div>
+
+                <div class="form-group">
                     <button class="btn btn-primary" @onclick="Edit">Edit</button>
                 </div>
 
@@ -54,6 +65,24 @@
                         <label for="name">Name</label>
                         <InputText type="text" id="name" class="form-control" placeholder="Enter Sync Setting name" @bind-Value="SyncSetting.Name" />
                         <ValidationMessage For="@(() => SyncSetting.Name)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name">Source Repository</label>
+                        <RepositoryTypeahead ProjectId="SyncSetting.ProjectId"
+                                             @bind-RepositoryId="SyncSetting.SourceRepositoryId"
+                                             Placeholder="Search a Source Repository...">
+                        </RepositoryTypeahead>
+                        <ValidationMessage For="@(() => SyncSetting.SourceRepositoryId)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name">Target Repository</label>
+                        <RepositoryTypeahead ProjectId="SyncSetting.ProjectId"
+                                             @bind-RepositoryId="SyncSetting.TargetRepositoryId"
+                                             Placeholder="Search a Target Repository...">
+                        </RepositoryTypeahead>
+                        <ValidationMessage For="@(() => SyncSetting.TargetRepositoryId)" />
                     </div>
 
                     <div class="form-group">

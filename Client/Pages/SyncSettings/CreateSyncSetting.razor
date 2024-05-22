@@ -1,6 +1,7 @@
 ﻿@page "/create-sync-setting/{ProjectId}"
 @using Microsoft.AspNetCore.Components.Forms
 @using OpenGitSync.Client.Services
+@using OpenGitSync.Client.Shared.Directives
 @using OpenGitSync.Shared.DataTransferObjects;
 @using Microsoft.AspNetCore.Authorization;
 @attribute [Authorize]
@@ -32,23 +33,19 @@
 
                 <div class="form-group">
                     <label for="name">Source Repository</label>
-                    <AutoComplete @bind-Value="SourceRepositoryName"
-                                  TItem="RepositoryDto"
-                                  DataProvider="RepositoriesTypeaheadDataProvider"
-                                  PropertyName="Name"
-                                  Placeholder="Search a Source Repository..."
-                                  OnChanged="(RepositoryDto repository) => OnRepositoryChanged(repository, true)" />
+                    <RepositoryTypeahead ProjectId="SyncSetting.ProjectId"
+                                         @bind-RepositoryId="SyncSetting.SourceRepositoryId"
+                                         Placeholder="Search a Source Repository...">
+                    </RepositoryTypeahead>
                     <ValidationMessage For="@(() => SyncSetting.SourceRepositoryId)" />
                 </div>
 
                 <div class="form-group">
                     <label for="name">Target Repository</label>
-                    <AutoComplete @bind-Value="TargetRepositoryName"
-                                  TItem="RepositoryDto"
-                                  DataProvider="RepositoriesTypeaheadDataProvider"
-                                  PropertyName="Name"
-                                  Placeholder="Search a Target Repository..."
-                                  OnChanged="(RepositoryDto repository) => OnRepositoryChanged(repository, false)" />
+                    <RepositoryTypeahead ProjectId="SyncSetting.ProjectId"
+                                         @bind-RepositoryId="SyncSetting.TargetRepositoryId"
+                                         Placeholder="Search a Target Repository...">
+                    </RepositoryTypeahead>
                     <ValidationMessage For="@(() => SyncSetting.TargetRepositoryId)" />
                 </div>
 
@@ -69,34 +66,10 @@
     private string SourceRepositoryName { get; set; }
     private string TargetRepositoryName { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         editContext = new EditContext(SyncSetting);
         SyncSetting.ProjectId = long.Parse(ProjectId);
-    }
-
-    private async Task<AutoCompleteDataProviderResult<RepositoryDto>> RepositoriesTypeaheadDataProvider(AutoCompleteDataProviderRequest<RepositoryDto> request)
-    {
-        var repositories = await RepositoryService.RepositoryTypeahead(request.Filter.Value, SyncSetting.ProjectId);
-
-        return await Task.FromResult(new AutoCompleteDataProviderResult<RepositoryDto> { Data = repositories, TotalCount = repositories.Count() });
-
-    }
-
-    private void OnRepositoryChanged(RepositoryDto repository, bool isSource)
-    {
-        if (repository is null)
-        {
-            return;
-        }
-        if (isSource)
-        {
-            SyncSetting.SourceRepositoryId = repository.Id;
-        }
-        else
-        {
-            SyncSetting.TargetRepositoryId = repository.Id;
-        }
     }
 
     private async Task HandleCreateSyncSetting()

@@ -1,0 +1,51 @@
+﻿@using OpenGitSync.Client.Services
+@using OpenGitSync.Shared.DataTransferObjects;
+@inject IRepositoryService RepositoryService
+
+<AutoComplete @bind-Value="RepositoryName"
+                TItem="RepositoryDto"
+                DataProvider="RepositoriesTypeaheadDataProvider"
+                PropertyName="Name"
+                Placeholder="@Placeholder"
+                OnChanged="(RepositoryDto repository) => OnRepositoryChanged(repository, false)" />
+
+@code {
+    [Parameter][EditorRequired] public long RepositoryId { get; set; }
+    [Parameter][EditorRequired] public long ProjectId { get; set; }
+    [Parameter] public string Placeholder { get; set; }
+    [Parameter]
+    public EventCallback<long> RepositoryIdChanged { get; set; }
+
+    private string RepositoryName { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if(RepositoryId > 0)
+        {
+            var response = await RepositoryService.GetRepositoryById(RepositoryId.ToString());
+
+            if (response != null)
+            {
+                RepositoryName = response.Name;
+            }
+        }
+    }
+
+    private async Task<AutoCompleteDataProviderResult<RepositoryDto>> RepositoriesTypeaheadDataProvider(AutoCompleteDataProviderRequest<RepositoryDto> request)
+    {
+        var repositories = await RepositoryService.RepositoryTypeahead(request.Filter.Value, ProjectId);
+
+        return await Task.FromResult(new AutoCompleteDataProviderResult<RepositoryDto> { Data = repositories, TotalCount = repositories.Count() });
+
+    }
+
+    private async Task OnRepositoryChanged(RepositoryDto repository, bool isSource)
+    {
+        if (repository is null)
+        {
+            return;
+        }
+        RepositoryId = repository.Id;
+        await RepositoryIdChanged.InvokeAsync(RepositoryId);
+    }
+}
