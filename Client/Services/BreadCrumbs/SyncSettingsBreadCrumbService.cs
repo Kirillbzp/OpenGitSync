@@ -13,18 +13,18 @@ namespace OpenGitSync.Client.Services.BreadCrumbs
 
         }
 
-        public void SetNewSyncSettingBreadCrumb(string projectName, string projectId)
+        public void SetNewSyncSetting(string projectName, string projectId)
         {
-            SetGeneralBreadCrumb();
-            AddBreadCrumb(projectName, string.Format("/view-project/{0}", projectId));
-            AddBreadCrumb("New Sync setting");
+            SetBase();
+            Add(projectName, string.Format("/view-project/{0}", projectId));
+            Add("New Sync setting");
         }
 
-        public void SetSyncSettingBreadCrumb(string projectName, string projectId, string syncSettingName)
+        public void SetSyncSetting(string projectName, string projectId, string syncSettingName)
         {
-            SetGeneralBreadCrumb();
-            AddBreadCrumb(projectName, string.Format("/view-project/{0}", projectId));
-            AddBreadCrumb(syncSettingName);
+            SetBase();
+            Add(projectName, string.Format("/view-project/{0}", projectId));
+            Add(syncSettingName);
         }
 
     }

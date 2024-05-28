@@ -76,7 +76,7 @@
     protected override async Task OnInitializedAsync()
     {
         ProjectName = await ProjectService.GetProjectNameById(ProjectId);
-        BreadCrumbService.SetNewSyncSettingBreadCrumb(ProjectName, ProjectId);
+        BreadCrumbService.SetNewSyncSetting(ProjectName, ProjectId);
     }
 
     protected override void OnInitialized()

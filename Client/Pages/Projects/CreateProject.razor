@@ -55,7 +55,7 @@
     protected override void OnInitialized()
     {
         editContext = new EditContext(Project);
-        BreadCrumbService.SetNewProjectBreadCrumb();
+        BreadCrumbService.SetNewProject();
     }
 
     private async Task HandleCreateProject()

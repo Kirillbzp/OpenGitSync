@@ -13,16 +13,16 @@ namespace OpenGitSync.Client.Services.BreadCrumbs
 
         }
 
-        public void SetNewProjectBreadCrumb()
+        public void SetNewProject()
         {
-            SetGeneralBreadCrumb();
-            AddBreadCrumb("New project");
+            SetBase();
+            Add("New project");
         }
 
-        public void SetProjectBreadCrumb(string projectName)
+        public void SetProject(string projectName)
         {
-            SetGeneralBreadCrumb();
-            AddBreadCrumb(projectName);
+            SetBase();
+            Add(projectName);
         }
 
     }

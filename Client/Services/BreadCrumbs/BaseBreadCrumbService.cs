@@ -58,28 +58,28 @@ namespace OpenGitSync.Client.Services.BreadCrumbs
             _service = service;
         }
 
-        protected void AddBreadCrumb(string name, string url)
+        protected void Add(string name, string url)
         {
             _service.Add(new BreadcrumbItem { Text = name, Href = url });
         }
 
-        protected void AddBreadCrumb(string name)
+        protected void Add(string name)
         {
             _service.Add(new BreadcrumbItem { Text = name, IsCurrentPage = true });
         }
 
-        public void SetBreadCrumb()
+        public void Set()
         {
-            SetGeneralBreadCrumb();
+            SetBase();
             _service.SetLastAsCurrent();
         }
 
-        public void SetGeneralBreadCrumb()
+        public void SetBase()
         {
             _service.BreadCrumbs.Clear();
             for (int i = 0; i <= entityBreadCrumbs.Count - 1; i++)
             {
-                AddBreadCrumb(entityBreadCrumbs[i].Text, entityBreadCrumbs[i].Href);
+                Add(entityBreadCrumbs[i].Text, entityBreadCrumbs[i].Href);
             }
         }
 

@@ -120,7 +120,7 @@
         if (response != null)
         {
             SyncSetting = response;
-            BreadCrumbService.SetSyncSettingBreadCrumb(SyncSetting.ProjectName, SyncSetting.ProjectId.ToString(), SyncSetting.Name);
+            BreadCrumbService.SetSyncSetting(SyncSetting.ProjectName, SyncSetting.ProjectId.ToString(), SyncSetting.Name);
         }
         else
         {

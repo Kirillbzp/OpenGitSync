@@ -109,7 +109,7 @@
     {
         await LoadProject();
         editContext = new EditContext(Project);
-        BreadCrumbService.SetProjectBreadCrumb(Project.Name);
+        BreadCrumbService.SetProject(Project.Name);
     }
 
     private async Task LoadProject()

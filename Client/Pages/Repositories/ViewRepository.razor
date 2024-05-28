@@ -119,7 +119,7 @@
         if (response != null)
         {
             Repository = response;
-            BreadCrumbService.SetRepositoryBreadCrumb(Repository.ProjectName, Repository.ProjectId.ToString(), Repository.Name);
+            BreadCrumbService.SetRepository(Repository.ProjectName, Repository.ProjectId.ToString(), Repository.Name);
         }
         else
         {
