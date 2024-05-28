@@ -20,7 +20,8 @@ namespace OpenGitSync.Shared.DataTransferObjects
 
         [NonEditable]
         public long ProjectId { get; set; }
-        
+        public string ProjectName { get; set; }
+
         public long SourceRepositoryId { get; set; }
         public long TargetRepositoryId { get; set; }
 

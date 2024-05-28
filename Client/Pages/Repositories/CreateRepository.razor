@@ -1,11 +1,17 @@
 ﻿@page "/create-repository/{ProjectId}"
+
 @using Microsoft.AspNetCore.Components.Forms
 @using OpenGitSync.Client.Services
+@using OpenGitSync.Client.Services.BreadCrumbs
 @using OpenGitSync.Shared.DataTransferObjects;
 @using Microsoft.AspNetCore.Authorization;
-@attribute [Authorize]
+
 @inject NavigationManager NavigationManager
 @inject IRepositoryService RepositoryService
+@inject IProjectService ProjectService
+@inject RepositoriesBreadCrumbService BreadCrumbService
+
+@attribute [Authorize]
 
 <PageTitle>Create Repository</PageTitle>
 
@@ -52,8 +58,15 @@
     [Parameter] public string ProjectId { get; set; }
     [Inject] protected ToastService ToastService { get; set; } = default!;
     private EditContext editContext;
+    private string ProjectName;
 
     protected override async Task OnInitializedAsync()
+    {
+        ProjectName = await ProjectService.GetProjectNameById(ProjectId);
+        BreadCrumbService.SetNewRepositoryBreadCrumb(ProjectName, ProjectId);
+    }
+
+    protected override void OnInitialized()
     {
         editContext = new EditContext(Repository);
         Repository.ProjectId = long.Parse(ProjectId);

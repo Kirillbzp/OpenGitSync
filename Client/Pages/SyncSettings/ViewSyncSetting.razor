@@ -2,14 +2,16 @@
 
 @using Microsoft.AspNetCore.Components.Forms
 @using OpenGitSync.Client.Services
+@using OpenGitSync.Client.Services.BreadCrumbs
 @using OpenGitSync.Client.Shared.Directives
-@using OpenGitSync.Shared.DataTransferObjects;
-@using Microsoft.AspNetCore.Authorization;
+@using OpenGitSync.Shared.DataTransferObjects
+@using Microsoft.AspNetCore.Authorization
 
 @inject NavigationManager NavigationManager
 @inject ISyncSettingsService SyncSettingsService
 @inject ToastService ToastService
 @inject PreloadService PreloadService
+@inject SyncSettingsBreadCrumbService BreadCrumbService
 
 @attribute [Authorize]
 
@@ -118,6 +120,7 @@
         if (response != null)
         {
             SyncSetting = response;
+            BreadCrumbService.SetSyncSettingBreadCrumb(SyncSetting.ProjectName, SyncSetting.ProjectId.ToString(), SyncSetting.Name);
         }
         else
         {

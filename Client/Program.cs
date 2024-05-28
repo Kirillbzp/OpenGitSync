@@ -8,6 +8,7 @@ using OpenGitSync.Client;
 using OpenGitSync.Client.MessageHandlers;
 using OpenGitSync.Client.Providers;
 using OpenGitSync.Client.Services;
+using OpenGitSync.Client.Services.BreadCrumbs;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 Console.WriteLine("Starting OGS...");
@@ -39,7 +40,15 @@ builder.Services.AddScoped(sp => new HttpClient(
 // Supply HttpClient instances that does not include access tokens when making requests to the server project
 builder.Services.AddHttpClient("OpenGitSync.PublicServerAPI", (sp, client) => { client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress); client.EnableIntercept(sp); });
 
-builder.Services.AddSingleton<ToastService>();
+//builder.Services.AddSingleton<ToastService>(); remove this line
+builder.Services.AddScoped<BreadCrumbService>();
+builder.Services.AddScoped<HomeBreadCrumbService>();
+builder.Services.AddScoped<DashboardBreadCrumbService>();
+builder.Services.AddScoped<ProjectsBreadCrumbService>();
+builder.Services.AddScoped<RepositoriesBreadCrumbService>();
+builder.Services.AddScoped<SyncSettingsBreadCrumbService>();
+builder.Services.AddScoped<UserSettingsBreadCrumbService>();
+
 
 builder.Services.AddScoped<HttpInterceptorService>();
 

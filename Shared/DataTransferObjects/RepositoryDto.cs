@@ -18,6 +18,7 @@ namespace OpenGitSync.Shared.DataTransferObjects
         public DateTime UpdatedAt { get; set; }
         [NonEditable]
         public long ProjectId { get; set; }
+        public string ProjectName { get; set; }
 
         public RepositoryDto()
         {

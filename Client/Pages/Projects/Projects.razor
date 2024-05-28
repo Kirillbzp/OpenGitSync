@@ -1,11 +1,15 @@
 ﻿@page "/projects"
+
 @using OpenGitSync.Client.Services
+@using OpenGitSync.Client.Services.BreadCrumbs
 @using OpenGitSync.Client.Shared
-@using OpenGitSync.Shared.DataTransferObjects;
-@using Microsoft.AspNetCore.Authorization;
+@using OpenGitSync.Shared.DataTransferObjects
+@using Microsoft.AspNetCore.Authorization
+
 @inject IProjectService ProjectService
 @inject NavigationManager NavigationManager
 @inject PreloadService PreloadService
+@inject ProjectsBreadCrumbService BreadCrumbService
 
 @attribute [Authorize]
 
@@ -38,6 +42,11 @@
 @code {
     
     private IEnumerable<ProjectDto> ProjectsList { get; set; }
+
+    protected override void OnInitialized()
+    {
+        BreadCrumbService.SetBreadCrumb();
+    }
     
     private async Task<GridDataProviderResult<ProjectDto>> ProjectsDataProvider(GridDataProviderRequest<ProjectDto> request)
     {

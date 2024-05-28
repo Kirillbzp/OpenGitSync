@@ -9,6 +9,7 @@ namespace OpenGitSync.Server.Helpers.Automapper
         public AutomapperProfile()
         {
             CreateMap<Project, ProjectDto>();
+            CreateMap<Project, IdNameDto>();
             CreateMap<ProjectDto, Project>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
@@ -22,7 +23,9 @@ namespace OpenGitSync.Server.Helpers.Automapper
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
 
-            CreateMap<RepositoryModel, RepositoryDto>();
+            CreateMap<RepositoryModel, RepositoryDto>()
+                .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(cs => cs.Project.Name));
+            CreateMap<RepositoryModel, IdNameDto>();
             CreateMap<RepositoryDto, RepositoryModel>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
@@ -34,7 +37,9 @@ namespace OpenGitSync.Server.Helpers.Automapper
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
 
-            CreateMap<SyncSetting, SyncSettingDto>();
+            CreateMap<SyncSetting, SyncSettingDto>()
+                .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(cs => cs.Project.Name));
+            CreateMap<SyncSetting, IdNameDto>();
             CreateMap<SyncSettingDto, SyncSetting>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.StartDate, opt => opt.Ignore())
@@ -55,11 +60,10 @@ namespace OpenGitSync.Server.Helpers.Automapper
                 .ForMember(dest => dest.SourceRepository, opt => opt.Ignore())
                 .ForMember(dest => dest.TargetRepository, opt => opt.Ignore());
 
+            CreateMap<Schedule, ScheduleDto>()
+                .ForMember(dest => dest.SyncSettingId, opt => opt.MapFrom(sc => sc.SyncSetting.Id)); 
             CreateMap<ScheduleDto, Schedule>()
                 .ForMember(dest => dest.SyncSetting, opt => opt.Ignore());
-            CreateMap<Schedule, ScheduleDto>()
-                .ForMember(dest => dest.SyncSettingId, opt => opt.MapFrom(sc => sc.SyncSetting.Id));
-
         }
     }
 }

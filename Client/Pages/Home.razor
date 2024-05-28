@@ -1,7 +1,13 @@
 ﻿@page "/"
-@using Microsoft.AspNetCore.Authorization;
-@attribute [Authorize]
+
+@using Microsoft.AspNetCore.Authorization
+@using OpenGitSync.Client.Services.BreadCrumbs
+
 @inherits LayoutComponentBase
+
+@inject HomeBreadCrumbService BreadCrumbService
+
+@attribute [Authorize]
 
 <div class="container">
     <h3 class="mt-5">Welcome to the Home page!</h3>
@@ -9,3 +15,10 @@
     <p>This is the main page of your application.</p>
     <p>Feel free to customize this page to fit your needs.</p>
 </div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        BreadCrumbService.SetBreadCrumb();
+    }
+}

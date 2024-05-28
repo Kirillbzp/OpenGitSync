@@ -35,6 +35,17 @@ namespace OpenGitSync.Server.Controllers
             return Ok(project);
         }
 
+        [HttpGet("name/{id}")]
+        public async Task<IActionResult> GetProjectName(long id)
+        {
+            var project = await _projectService.GetProjectNameById(id, UserId);
+
+            if (project == null)
+                return NotFound(new { Error = "Project not found" });
+
+            return Ok(project);
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateProject(ProjectCreateDto projectDto)
         {

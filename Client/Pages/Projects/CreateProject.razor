@@ -1,11 +1,16 @@
 ﻿@page "/create-project"
+
 @using Microsoft.AspNetCore.Components.Forms
 @using OpenGitSync.Client.Services
-@using OpenGitSync.Shared.DataTransferObjects;
-@using Microsoft.AspNetCore.Authorization;
-@attribute [Authorize]
+@using OpenGitSync.Client.Services.BreadCrumbs
+@using OpenGitSync.Shared.DataTransferObjects
+@using Microsoft.AspNetCore.Authorization
+
 @inject NavigationManager NavigationManager
 @inject IProjectService ProjectService
+@inject ProjectsBreadCrumbService BreadCrumbService
+
+@attribute [Authorize]
 
 <PageTitle>Create Project</PageTitle>
 
@@ -47,9 +52,10 @@
     [Inject] protected ToastService ToastService { get; set; } = default!;
     private EditContext editContext;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         editContext = new EditContext(Project);
+        BreadCrumbService.SetNewProjectBreadCrumb();
     }
 
     private async Task HandleCreateProject()

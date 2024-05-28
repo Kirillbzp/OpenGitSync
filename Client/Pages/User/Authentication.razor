@@ -1,7 +1,10 @@
 ﻿@page "/authentication/{action}"
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
-@using OpenGitSync.Client.Shared.Layouts;
+
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using OpenGitSync.Client.Shared.Layouts
+
 @layout EmptyLayout
+
 <RemoteAuthenticatorView Action="@Action" />
 
 @code{

@@ -9,6 +9,7 @@ namespace OpenGitSync.Server.Services
     {
         Task<IEnumerable<ProjectDto>> GetProjects(string userId);
         Task<ProjectDto?> GetProjectById(long id, string userId);
+        Task<IdNameDto?> GetProjectNameById(long id, string userId);
         Task<ProjectDto> CreateProject(ProjectCreateDto projectDto, string userId);
         Task<ProjectDto?> UpdateProject(long id, ProjectDto projectDto, string userId);
         Task<ProjectDto?> DeleteProject(long id, string userId);
@@ -38,6 +39,12 @@ namespace OpenGitSync.Server.Services
         {
             var project = await _projectRepository.GetProjectById(id, userId);
             return project != null ? _mapper.Map<ProjectDto>(project) : null;
+        }
+
+        public async Task<IdNameDto?> GetProjectNameById(long id, string userId)
+        {
+            var project = await _projectRepository.GetProjectById(id, userId);
+            return project != null ? _mapper.Map<IdNameDto>(project) : null;
         }
 
         public async Task<ProjectDto> CreateProject(ProjectCreateDto projectDto, string userId)

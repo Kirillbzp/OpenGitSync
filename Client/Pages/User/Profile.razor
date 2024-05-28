@@ -1,13 +1,18 @@
 ﻿@page "/profile"
+
 @using Microsoft.AspNetCore.Components.Forms
 @using OpenGitSync.Client.Services
+@using OpenGitSync.Client.Services.BreadCrumbs
 @using OpenGitSync.Client.Shared
-@using OpenGitSync.Shared.DataTransferObjects;
-@using Microsoft.AspNetCore.Authorization;
+@using OpenGitSync.Shared.DataTransferObjects
+@using Microsoft.AspNetCore.Authorization
 @using System.Linq.Expressions
-@attribute [Authorize]
+
 @inject IUserService UserService
 @inject NavigationManager NavigationManager
+@inject UserSettingsBreadCrumbService BreadCrumbService
+
+@attribute [Authorize]
 
 <PageTitle>Settings</PageTitle>
 
@@ -61,6 +66,11 @@ else
     {
         await LoadUserProfile();
         editContext = new EditContext(User);
+    }
+
+    protected override void OnInitialized()
+    {
+        BreadCrumbService.SetBreadCrumb();
     }
 
     private async Task LoadUserProfile()

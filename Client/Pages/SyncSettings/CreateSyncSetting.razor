@@ -1,13 +1,19 @@
 ﻿@page "/create-sync-setting/{ProjectId}"
+
 @using Microsoft.AspNetCore.Components.Forms
 @using OpenGitSync.Client.Services
+@using OpenGitSync.Client.Services.BreadCrumbs
 @using OpenGitSync.Client.Shared.Directives
-@using OpenGitSync.Shared.DataTransferObjects;
-@using Microsoft.AspNetCore.Authorization;
-@attribute [Authorize]
+@using OpenGitSync.Shared.DataTransferObjects
+@using Microsoft.AspNetCore.Authorization
+
 @inject NavigationManager NavigationManager
 @inject ISyncSettingsService SyncSettingsService
 @inject IRepositoryService RepositoryService
+@inject IProjectService ProjectService
+@inject SyncSettingsBreadCrumbService BreadCrumbService
+
+@attribute [Authorize]
 
 <PageTitle>Create Sync Setting</PageTitle>
 
@@ -62,9 +68,16 @@
     [Parameter] public string ProjectId { get; set; }
     [Inject] protected ToastService ToastService { get; set; } = default!;
     private EditContext editContext;
+    private string ProjectName;
 
     private string SourceRepositoryName { get; set; }
     private string TargetRepositoryName { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ProjectName = await ProjectService.GetProjectNameById(ProjectId);
+        BreadCrumbService.SetNewSyncSettingBreadCrumb(ProjectName, ProjectId);
+    }
 
     protected override void OnInitialized()
     {

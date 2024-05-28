@@ -1,6 +1,10 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
-@inherits LayoutComponentBase
+@using OpenGitSync.Client.Services.BreadCrumbs
+
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject BreadCrumbService BreadCrumbService
+
+@inherits LayoutComponentBase
 
 <div class="bb-page">
 
@@ -10,10 +14,10 @@
              DataProvider="SidebarDataProvider" />
 
     <main>
-        <div class="bb-top-row px-4 d-flex justify-content-end">
+        <div class="bb-top-row px-4 d-flex justify-content-between">
+            <Breadcrumb Items="BreadCrumbService.BreadCrumbs" />
             <a href="/profile">@userName</a>
         </div>
-
         <div class="top-row px-4">
             <AuthorizeView>
                 <Authorized>
@@ -41,8 +45,6 @@
 @code {
     private string title = "Open Git Sync";
     private string userName = "";
-
-    //private AuthenticationStateProvider AuthenticationStateProvider = default!;
     private Sidebar sidebar;
     private IEnumerable<NavItem> navItems;
 
@@ -55,6 +57,7 @@
         {
             userName = authenticationState.User?.Identity?.Name;
         }
+
     }
 
     private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)

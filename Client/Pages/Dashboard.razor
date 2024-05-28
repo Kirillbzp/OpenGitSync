@@ -1,13 +1,15 @@
 ﻿@page "/dashboard"
 
-@using OpenGitSync.Client.Services;
+@using OpenGitSync.Client.Services
+@using OpenGitSync.Client.Services.BreadCrumbs
 @using OpenGitSync.Client.Shared
-@using OpenGitSync.Shared.DataTransferObjects;
-@using Microsoft.AspNetCore.Authorization;
+@using OpenGitSync.Shared.DataTransferObjects
+@using Microsoft.AspNetCore.Authorization
 
 @inject IProjectService ProjectService
 @inject NavigationManager NavigationManager
 @inject PreloadService PreloadService
+@inject DashboardBreadCrumbService BreadCrumbService
 
 @attribute [Authorize]
 
@@ -40,6 +42,11 @@
     protected override async Task OnInitializedAsync()
     {
         ProjectsList = await ProjectService.GetProjects();
+    }
+
+    protected override void OnInitialized()
+    {
+        BreadCrumbService.SetBreadCrumb();
     }
 
     private async Task<GridDataProviderResult<ProjectDto>> ProjectsDataProvider(GridDataProviderRequest<ProjectDto> request)

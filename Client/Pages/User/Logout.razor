@@ -1,11 +1,15 @@
 ﻿@page "/logout"
-@using Microsoft.AspNetCore.Authorization;
-@attribute [Authorize]
-@inherits LayoutComponentBase
-@using OpenGitSync.Client.Services;
+
+@using Microsoft.AspNetCore.Authorization
+@using OpenGitSync.Client.Services
 @using OpenGitSync.Client.Shared
+
 @inject IAuthService AuthService
 @inject NavigationManager NavigationManager
+
+@inherits LayoutComponentBase
+
+@attribute [Authorize]
 
 <div class="container">
     <LoadingIndicator loadingMessage="Logging out..." />

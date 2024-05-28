@@ -7,6 +7,7 @@ namespace OpenGitSync.Client.Services
     {
         Task<List<ProjectDto>> GetProjects();
         Task<ProjectDto> GetProjectById(string id);
+        Task<string> GetProjectNameById(string id);
         Task<(bool, ProjectDto)> CreateProject(ProjectCreateDto projectCreateDto);
         Task<bool> UpdateProject(long id, ProjectDto projectUpdateDto);
     }
@@ -42,6 +43,16 @@ namespace OpenGitSync.Client.Services
                 return new ProjectDto();
             }
             return result;
+        }
+
+        public async Task<string> GetProjectNameById(string id)
+        {
+            var result = await _httpClient.GetFromJsonAsyncSafe<IdNameDto>($"api/projects/name/{id}");
+            if (result == null)
+            {
+                return String.Empty;
+            }
+            return result.Name;
         }
 
         public async Task<(bool, ProjectDto)> CreateProject(ProjectCreateDto projectCreateDto)

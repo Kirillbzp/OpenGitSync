@@ -2,14 +2,16 @@
 
 @using Microsoft.AspNetCore.Components.Forms
 @using OpenGitSync.Client.Services
+@using OpenGitSync.Client.Services.BreadCrumbs
 @using OpenGitSync.Client.Shared
-@using OpenGitSync.Shared.DataTransferObjects;
-@using Microsoft.AspNetCore.Authorization;
+@using OpenGitSync.Shared.DataTransferObjects
+@using Microsoft.AspNetCore.Authorization
 
 @inject NavigationManager NavigationManager
 @inject IRepositoryService RepositoryService
 @inject ToastService ToastService
 @inject PreloadService PreloadService
+@inject RepositoriesBreadCrumbService BreadCrumbService
 
 @attribute [Authorize]
 
@@ -103,6 +105,11 @@
         editContext = new EditContext(Repository);
     }
 
+    protected override void OnInitialized()
+    {
+        // BreadCrumbService.SetBreadCrumb(BreadCrumbType.Project, -1, Repository.ProjectId.ToString());
+    }
+
     private async Task LoadRepository()
     {
         PreloadService.Show(SpinnerColor.Light, "Loading repository...");
@@ -112,6 +119,7 @@
         if (response != null)
         {
             Repository = response;
+            BreadCrumbService.SetRepositoryBreadCrumb(Repository.ProjectName, Repository.ProjectId.ToString(), Repository.Name);
         }
         else
         {

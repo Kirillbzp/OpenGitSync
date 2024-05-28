@@ -1,10 +1,13 @@
 ﻿@page "/notifications"
-@using OpenGitSync.Client.Services;
+
+@using OpenGitSync.Client.Services
 @using OpenGitSync.Client.Shared
-@using OpenGitSync.Shared.DataTransferObjects;
-@using Microsoft.AspNetCore.Authorization;
-@attribute [Authorize]
+@using OpenGitSync.Shared.DataTransferObjects
+@using Microsoft.AspNetCore.Authorization
+
 @inject INotificationService notificationService
+
+@attribute [Authorize]
 
 <h3>Notifications</h3>
 
