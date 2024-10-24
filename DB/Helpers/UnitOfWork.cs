@@ -7,6 +7,7 @@
         IRepositoryRepository RepositoryRepository { get; }
         ISyncSettingRepository SyncSettingRepository { get; }
         IUserProjectRepository UserProjectRepository { get; }
+        IFoldersToDeleteRepository FoldersToDeleteRepository { get; }
 
         Task SaveChanges();
     }
@@ -25,6 +26,7 @@
             RepositoryRepository = new RepositoryRepository(_dbContext);
             SyncSettingRepository = new SyncSettingRepository(_dbContext);
             UserProjectRepository = new UserProjectRepository(_dbContext);
+            FoldersToDeleteRepository = new FoldersToDeleteRepository(_dbContext);
         }
 
         public IUserRepository UserRepository { get; }
@@ -32,6 +34,7 @@
         public IRepositoryRepository RepositoryRepository { get; }
         public ISyncSettingRepository SyncSettingRepository { get; }
         public IUserProjectRepository UserProjectRepository { get; }
+        public IFoldersToDeleteRepository FoldersToDeleteRepository { get; }
 
         public async Task SaveChanges()
         {

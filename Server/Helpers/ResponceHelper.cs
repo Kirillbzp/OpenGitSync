@@ -14,5 +14,10 @@ namespace OpenGitSync.Server.Helpers
             return new ResponceResultDto() { Success = false, Errors = result.Errors.Select(e => e.Description).ToList() };
         }
 
+        public static ResponceResultDto ToError(this string result)
+        {
+            return new ResponceResultDto() { Success = false, Errors = new List<string>() { result } };
+        }
+
     }
 }

@@ -15,7 +15,7 @@ namespace OpenGitSync.Server.Services
         Task<RepositoryDto?> UpdateRepository(long id, RepositoryDto repositoryDto, string userId);
         Task<RepositoryDto?> DeleteRepository(long id, string userId);
         Task<IEnumerable<RepositoryDto>> RepositoryTypeahead(string query, long projectId, string userId);
-        Task<bool> CheckConnection(string url, string token);
+        Task<(bool, string)> CheckConnection(string url, string token);
     }
 
     public class RepositoryService : IRepositoryService
@@ -97,9 +97,10 @@ namespace OpenGitSync.Server.Services
             return repositoryDtos;
         }
 
-        public async Task<bool> CheckConnection(string url, string token)
+        public async Task<(bool, string)> CheckConnection(string url, string token)
         {
-            return await _gitService.CheckConnection(url, token);
+            var result = await _gitService.CheckConnection(url, token);
+            return result;
         }
     }
 

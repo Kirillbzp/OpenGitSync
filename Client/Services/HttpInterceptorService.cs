@@ -42,7 +42,6 @@ public class HttpInterceptorService
             }
 
             _toastService.Notify(new(ToastType.Warning, message));
-            throw new HttpResponseException(message);
         }
     }
 

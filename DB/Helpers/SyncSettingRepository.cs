@@ -25,6 +25,8 @@ namespace DB.Helpers
         public async Task<SyncSetting?> GetSyncSettingById(long id, string userId)
         {
             return await _dbContext.SyncSettings.Include(s => s.Schedule)
+                                                .Include(s => s.SourceRepository)
+                                                .Include(s => s.TargetRepository)
                                                 .Include(s => s.Project)
                                                 .ThenInclude(p => p.UserProjects)
                                                 .Where(s => s.Id == id && s.Project.UserProjects.Any(up => up.UserId == userId))

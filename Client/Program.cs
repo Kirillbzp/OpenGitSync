@@ -49,7 +49,6 @@ builder.Services.AddScoped<RepositoriesBreadCrumbService>();
 builder.Services.AddScoped<SyncSettingsBreadCrumbService>();
 builder.Services.AddScoped<UserSettingsBreadCrumbService>();
 
-
 builder.Services.AddScoped<HttpInterceptorService>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -64,6 +63,7 @@ builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IProjectService, ProjectService>();
 builder.Services.AddTransient<IRepositoryService, RepositoryService>();
 builder.Services.AddTransient<ISyncSettingsService, SyncSettingsService>();
+builder.Services.AddTransient<ISyncWorkerService, SyncWorkerService>();
 
 var host = builder.Build();
 

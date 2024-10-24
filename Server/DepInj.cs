@@ -38,6 +38,7 @@ namespace OpenGitSync.Server
             services.AddScoped<IRepositoryService, RepositoryService>();
             services.AddScoped<ISyncSettingService, SyncSettingService>();
             services.AddScoped<IUserProjectService, UserProjectService>();
+            services.AddScoped<ISyncWorkerService, SyncWorkerService>();
             
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IProjectRepository, ProjectRepository>();

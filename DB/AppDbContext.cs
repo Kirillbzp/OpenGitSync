@@ -20,7 +20,8 @@ namespace DB
         public DbSet<SyncSetting> SyncSettings { get; set; }
         public DbSet<Schedule> Schedules { get; set; }
         public DbSet<UserProject> UserProjects { get; set; }
-        public DbSet<Notification> Notifications { get; set; }        
+        public DbSet<Notification> Notifications { get; set; }  
+        public DbSet<FoldersToRemove> FoldersToRemove { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

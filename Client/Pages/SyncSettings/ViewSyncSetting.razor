@@ -9,6 +9,7 @@
 
 @inject NavigationManager NavigationManager
 @inject ISyncSettingsService SyncSettingsService
+@inject ISyncWorkerService SyncWorkerService
 @inject ToastService ToastService
 @inject PreloadService PreloadService
 @inject SyncSettingsBreadCrumbService BreadCrumbService
@@ -95,6 +96,17 @@
             </div>
         </EditForm>
     }
+    <br />
+    <Card>
+        <CardBody>
+            <h5 class="card-title">Synchronization</h5>
+
+            <div class="form-group">
+                <button Disabled=@EditMode class="btn btn-primary" @onclick="SyncAll">Sync all</button>
+            </div>
+
+        </CardBody>
+    </Card>
 }
 
 @code {
@@ -147,6 +159,24 @@
             // Handle the Sync Setting creation error, display an error message, or perform other actions
             ToastService.Notify(new(ToastType.Danger, $"Failed to create Sync Setting."));
         }
+    }
+
+    private async Task SyncAll()
+    {
+        PreloadService.Show(SpinnerColor.Light, "Syncing...");
+
+        var errorMessage = await SyncWorkerService.SyncAll(SyncSettingId);
+
+        if (errorMessage == string.Empty)
+        {
+            ToastService.Notify(new(ToastType.Success, $"Syncing completed successfully."));
+        }
+        else
+        {
+            ToastService.Notify(new(ToastType.Danger, $"{errorMessage}"));
+        }
+
+        PreloadService.Hide();
     }
 
     private void Edit()

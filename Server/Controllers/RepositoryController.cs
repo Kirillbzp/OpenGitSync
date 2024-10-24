@@ -81,7 +81,9 @@ namespace OpenGitSync.Server.Controllers
         [HttpGet("checkConnection")]
         public async Task<IActionResult> CheckConnection(string url, string token)
         {
-            var result = await _repositoryService.CheckConnection(url, token);
+            var (result, error) = await _repositoryService.CheckConnection(url, token);
+            if (!string.IsNullOrEmpty(error))
+                return BadRequest(new { Error = error });
             return Ok(result);
         }
     }
